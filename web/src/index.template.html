@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPS Track Optimizer</title>
+<meta name="description" content="Clean recorded walking traces: merge the fixes logged while standing still, simplify straight stretches, and measure the accuracy cost. Runs entirely in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+/*LEAFLETCSS*/
+</style>
+<style>
+/*CSS*/
+</style>
+</head>
+<body>
+<a class="skip" href="#controls">Skip to controls</a>
+
+<header class="top">
+  <h1>GPS Track Optimizer</h1>
+  <p>Cleans recorded walking traces: merges the fixes logged while standing still, keeps every turn, and measures how far the cleaned route strays from the recording.</p>
+  <a class="gh" href="https://github.com/sujaisam45/gps-track-optimizer">Source code and report</a>
+  <p class="privacy">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    Your GPX file is processed in this browser tab. It is never uploaded anywhere.
+  </p>
+</header>
+
+<main>
+<section class="workspace" aria-label="Track and settings">
+  <div class="map-wrap">
+    <div id="map" role="region" aria-label="Map of the recorded and cleaned track. A text summary and the list of stops follow below the map."></div>
+    <fieldset class="view-toggle">
+      <legend class="sr-only">Show on map</legend>
+      <label><input type="radio" name="view" value="both" checked><span>Both</span></label>
+      <label><input type="radio" name="view" value="recorded"><span>Recorded</span></label>
+      <label><input type="radio" name="view" value="cleaned"><span>Cleaned</span></label>
+    </fieldset>
+    <div class="legend" aria-hidden="true">
+      <ul>
+        <li><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--recorded)" stroke-width="1.5" opacity=".7"/><circle cx="8" cy="5" r="1.8" fill="var(--recorded)"/><circle cx="15" cy="5" r="1.8" fill="var(--recorded)"/><circle cx="22" cy="5" r="1.8" fill="var(--recorded)"/></svg>Recorded fixes</li>
+        <li><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--panel)" stroke-width="6"/><line x1="1" y1="5" x2="29" y2="5" stroke="var(--cleaned)" stroke-width="3.5"/><circle cx="15" cy="5" r="3" fill="var(--cleaned)" stroke="var(--panel)" stroke-width="1.2"/></svg>Cleaned route</li>
+        <li><svg width="30" height="14"><circle cx="15" cy="7" r="6" fill="var(--stop)" fill-opacity=".55" stroke="var(--stop)" stroke-width="2"/></svg>Merged stop</li>
+        <li class="truth-key"><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--truth)" stroke-width="1.5" stroke-dasharray="4 3"/></svg>True path (demo only)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" id="controls" tabindex="-1">
+    <section aria-labelledby="h-trace">
+      <h2 id="h-trace">Trace</h2>
+      <p class="hint" id="demo-label" style="margin:0 0 .4rem">Simulated demo walks</p>
+      <div class="demo-row" role="group" aria-labelledby="demo-label">
+        <button type="button" data-demo="rtk_fix">RTK fix</button>
+        <button type="button" data-demo="rtk_float">RTK float</button>
+        <button type="button" data-demo="phone">Phone GPS</button>
+      </div>
+      <div class="drop" id="drop">
+        <input type="file" id="file" accept=".gpx,application/gpx+xml,application/xml,text/xml">
+        <label for="file">Choose a GPX file</label> or drop it here
+      </div>
+      <p class="loaded" id="loaded" aria-live="polite"></p>
+      <p class="error" id="error" role="alert"></p>
+    </section>
+
+    <section aria-labelledby="h-result">
+      <h2 id="h-result" class="sr-only">Result</h2>
+      <p class="result-line" id="result-line" aria-live="polite"></p>
+      <p class="result-sub" id="result-sub"></p>
+      <div class="funnel" id="funnel" aria-hidden="true"></div>
+      <p class="funnel-note" id="funnel-note"></p>
+    </section>
+
+    <section aria-labelledby="h-settings">
+      <h2 id="h-settings">Settings</h2>
+      <fieldset>
+        <legend class="group">Receiver</legend>
+        <div class="seg">
+          <label><input type="radio" name="preset" value="rtk_fix"><span>RTK fix</span></label>
+          <label><input type="radio" name="preset" value="rtk_float" checked><span>RTK float</span></label>
+          <label><input type="radio" name="preset" value="phone"><span>Phone</span></label>
+          <label><input type="radio" name="preset" value="custom"><span>Custom</span></label>
+        </div>
+      </fieldset>
+      <div class="slider">
+        <label for="tol">Simplification tolerance</label><output for="tol" id="tol-out"></output>
+        <input type="range" id="tol" min="0.1" max="5" step="0.05" aria-describedby="tol-help">
+        <small id="tol-help">No recorded fix ends up further than this from the cleaned route. Set it above the receiver's noise.</small>
+      </div>
+      <div class="slider">
+        <label for="radius">Stop radius</label><output for="radius" id="radius-out"></output>
+        <input type="range" id="radius" min="0" max="8" step="0.1" aria-describedby="radius-help">
+        <small id="radius-help">Fixes staying within this distance of their centre count as standing still. 0 turns stop merging off.</small>
+      </div>
+      <div class="slider">
+        <label for="mindur">Shortest stop</label><output for="mindur" id="mindur-out"></output>
+        <input type="range" id="mindur" min="2" max="30" step="1">
+      </div>
+      <div class="slider">
+        <label for="maxv">Drift allowed during a stop</label><output for="maxv" id="maxv-out"></output>
+        <input type="range" id="maxv" min="0.05" max="0.6" step="0.05" aria-describedby="maxv-help">
+        <small id="maxv-help">Separates a stop from very slow walking.</small>
+      </div>
+      <label class="check"><input type="checkbox" id="keepstops" checked> Always keep merged stops in the route</label>
+      <label class="check" id="truth-wrap"><input type="checkbox" id="showtruth" checked> Show the true path</label>
+    </section>
+
+
+    <section aria-labelledby="h-metrics">
+      <h2 id="h-metrics">Accuracy and size</h2>
+      <dl class="metrics" id="metrics"></dl>
+    </section>
+
+    <section aria-labelledby="h-dl">
+      <h2 id="h-dl" class="sr-only">Downloads</h2>
+      <div class="downloads">
+        <button type="button" id="dl-gpx">Download cleaned GPX</button>
+        <button type="button" id="dl-csv">Download metrics CSV</button>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="details" aria-label="Details">
+  <div>
+    <h2>Distance from the cleaned route</h2>
+    <p class="lede">Every recorded fix, in walking order. Shaded parts were merged into a stop. Hover or tap to find the fix on the map.</p>
+    <div class="chart" id="chart"></div>
+  </div>
+  <div>
+    <h2>Stops</h2>
+    <p class="lede" id="stops-lede"></p>
+    <div id="stops"></div>
+  </div>
+</section>
+
+<section class="method" aria-label="Method">
+  <div>
+    <h2>How the cleaning works</h2>
+    <ol>
+      <li><div><h3>Check the fixes</h3><p>Drop fixes with no position or timestamp, duplicates, and single jumps faster than 4 m/s, which are usually signal reflections.</p></div></li>
+      <li><div><h3>Work in metres</h3><p>Convert latitude and longitude to the local UTM grid, so every tolerance is a real distance on the ground.</p></div></li>
+      <li><div><h3>Merge stops</h3><p>A run of fixes is a stop when all of them stay within the stop radius for the shortest-stop time and the walker drifts slower than the allowed speed. The run becomes one fix at its median position, keeping its start and end time. Speed alone is not enough: noise makes a standing person look like they move, and careful walking can be slow.</p></div></li>
+      <li><div><h3>Simplify straight stretches</h3><p>Douglas–Peucker joins the ends of a stretch and keeps the fix furthest from that line if it is beyond the tolerance, then repeats on both halves. A turn is always the furthest fix of its stretch, so turns survive; fixes along a straight street do not.</p></div></li>
+    </ol>
+  </div>
+  <div>
+    <h2>Limits</h2>
+    <ul>
+      <li>The demo walks are simulated around Place du Vieux-Marché in Rouen, with a known true path. They are not real recordings. The street layout is mostly straight, so real routes with curves keep more fixes.</li>
+      <li>With phone-grade GPS (about 3 m of error) stops are found unreliably and no simplification can recover the true path. The method is meant for RTK receivers.</li>
+      <li>A receiver that is consistently offset to one side stays offset. Cleaning removes noise, not bias.</li>
+      <li>Default settings have not yet been tuned on real RTK traces.</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<footer>
+  Built by Sujai Samraj, NEOMA Business School, Rouen. The same algorithms run in Python with a test suite and an evaluation report in the <a href="https://github.com/sujaisam45/gps-track-optimizer">GitHub repository</a>.
+</footer>
+
+<script>
+/*PROJ4*/
+</script>
+<script>
+/*CORE*/
+</script>
+<script>
+window.GTO_SAMPLES = /*SAMPLES*/;
+</script>
+<script>
+/*APP*/
+</script>
+</body>
+</html>

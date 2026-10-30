@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="gpx.py -- https://github.com/tkrajina/gpxpy">
+  <trk>
+    <name>synthetic_rtk_float</name>
+    <trkseg>
+      <trkpt lat="49.442900256294585" lon="1.0883994359046971">
+        <ele>15.044441670105913</ele>
+        <time>2026-10-30T09:00:00Z</time>
+      </trkpt>
+      <trkpt lat="49.44291638348328" lon="1.089570309413389">
+        <ele>15.008464140258058</ele>
+        <time>2026-10-30T09:01:24.500000Z</time>
+      </trkpt>
+      <trkpt lat="49.44346034124247" lon="1.0895525293365982">
+        <ele>15.46159136999592</ele>
+        <time>2026-10-30T09:02:30Z</time>
+      </trkpt>
+      <trkpt lat="49.443781322262026" lon="1.090297280309381">
+        <ele>14.947396197719462</ele>
+        <time>2026-10-30T09:03:47Z</time>
+      </trkpt>
+      <trkpt lat="49.44445974203364" lon="1.0902730625620476">
+        <ele>15.184754762256581</ele>
+        <time>2026-10-30T09:05:11Z</time>
+      </trkpt>
+      <trkpt lat="49.44445230592217" lon="1.090050305145517">
+        <ele>14.801111212871307</ele>
+        <time>2026-10-30T09:05:46Z</time>
+      </trkpt>
+      <trkpt lat="49.44445969707418" lon="1.0899452583374325">
+        <ele>14.321900565914854</ele>
+        <time>2026-10-30T09:06:03Z</time>
+      </trkpt>
+      <trkpt lat="49.44444196680067" lon="1.089581997310614">
+        <ele>15.256730606595784</ele>
+        <time>2026-10-30T09:07:01Z</time>
+      </trkpt>
+      <trkpt lat="49.44445097262833" lon="1.0893757619587334">
+        <ele>15.092159098699259</ele>
+        <time>2026-10-30T09:07:35Z</time>
+      </trkpt>
+      <trkpt lat="49.44444243306399" lon="1.089170883269069">
+        <ele>14.897843733635375</ele>
+        <time>2026-10-30T09:08:16.500000Z</time>
+      </trkpt>
+      <trkpt lat="49.444980190381735" lon="1.0891498082204905">
+        <ele>15.647674773701489</ele>
+        <time>2026-10-30T09:09:18Z</time>
+      </trkpt>
+      <trkpt lat="49.44496281321206" lon="1.088048153917406">
+        <ele>14.934493936458496</ele>
+        <time>2026-10-30T09:10:24Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

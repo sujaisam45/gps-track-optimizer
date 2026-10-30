@@ -1,0 +1,2 @@
+raw_points,validated_points,after_stationary_points,final_points,reduction_pct,stops_detected,points_in_stops,original_length_m,cleaned_length_m,max_deviation_m,mean_deviation_m,hausdorff_m,stop_jitter_max_m,original_gpx_bytes,cleaned_gpx_bytes,size_reduction_pct,processing_time_s,tolerance_m,truth_max_error_m,truth_mean_error_m,original_truth_mean_error_m
+625,612,605,96,84.64,1,8,1273.58,808.91,2.959,0.738,2.959,0.818,97697,15540,84.09,0.0376,3.0,10.312,2.419,2.416

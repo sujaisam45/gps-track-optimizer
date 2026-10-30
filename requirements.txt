@@ -1,0 +1,10 @@
+# Tested with Python 3.13; 3.11+ should work.
+pandas>=2.2
+numpy>=1.26
+shapely>=2.0
+pyproj>=3.6
+gpxpy>=1.6
+folium>=0.17
+matplotlib>=3.8
+streamlit>=1.40
+pytest>=8.0
