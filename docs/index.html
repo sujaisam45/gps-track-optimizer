@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GPS Track Optimizer</title>
-<meta name="description" content="Clean recorded walking traces: merge the fixes logged while standing still, simplify straight stretches, and measure the accuracy cost. Runs entirely in your browser.">
+<meta name="description" id="meta-desc" content="Clean recorded walking traces: merge the fixes logged while standing still, simplify straight stretches, and measure the accuracy cost. Runs entirely in your browser.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&display=swap">
@@ -875,60 +875,75 @@ footer { padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem; color: var(--graphite); f
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
 
+/* language switch */
+.lang { display: flex; border: 1px solid var(--rule); border-radius: 7px; overflow: hidden; margin-left: auto; align-self: center; }
+.lang label { position: relative; }
+.lang input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.lang span { display: block; padding: .2rem .55rem; font-size: .85rem; font-weight: 700; }
+.lang input:checked + span { background: var(--ink); color: var(--paper); }
+.lang input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: -3px; }
+.top .lang + .gh { margin-left: 0; }
+.seg span { line-height: 1.2; }
+
 </style>
 </head>
 <body>
-<a class="skip" href="#controls">Skip to controls</a>
+<a class="skip" href="#controls" data-i18n="skip">Skip to controls</a>
 
 <header class="top">
   <h1>GPS Track Optimizer</h1>
-  <p>Cleans recorded walking traces: merges the fixes logged while standing still, keeps every turn, and measures how far the cleaned route strays from the recording.</p>
-  <a class="gh" href="https://github.com/sujaisam45/gps-track-optimizer">Source code and report</a>
+  <p data-i18n="intro">Cleans recorded walking traces: merges the fixes logged while standing still, keeps every turn, and measures how far the cleaned route strays from the recording.</p>
+  <fieldset class="lang">
+    <legend class="sr-only" data-i18n="lang.legend">Language</legend>
+    <label><input type="radio" name="lang" value="en"><span lang="en">EN</span></label>
+    <label><input type="radio" name="lang" value="fr"><span lang="fr">FR</span></label>
+  </fieldset>
+  <a class="gh" href="https://github.com/sujaisam45/gps-track-optimizer" data-i18n="gh">Source code and report</a>
   <p class="privacy">
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-    Your GPX file is processed in this browser tab. It is never uploaded anywhere.
+    <span data-i18n="privacy">Your GPX file is processed in this browser tab. It is never uploaded anywhere.</span>
   </p>
 </header>
 
 <main>
-<section class="workspace" aria-label="Track and settings">
+<section class="workspace" aria-label="Track and settings" data-i18n-aria="aria.workspace">
   <div class="map-wrap">
-    <div id="map" role="region" aria-label="Map of the recorded and cleaned track. A text summary and the list of stops follow below the map."></div>
+    <div id="map" role="region" aria-label="Map of the recorded and cleaned track. A text summary and the list of stops follow below the map." data-i18n-aria="aria.map"></div>
     <fieldset class="view-toggle">
-      <legend class="sr-only">Show on map</legend>
-      <label><input type="radio" name="view" value="both" checked><span>Both</span></label>
-      <label><input type="radio" name="view" value="recorded"><span>Recorded</span></label>
-      <label><input type="radio" name="view" value="cleaned"><span>Cleaned</span></label>
+      <legend class="sr-only" data-i18n="view.legend">Show on map</legend>
+      <label><input type="radio" name="view" value="both" checked><span data-i18n="view.both">Both</span></label>
+      <label><input type="radio" name="view" value="recorded"><span data-i18n="view.recorded">Recorded</span></label>
+      <label><input type="radio" name="view" value="cleaned"><span data-i18n="view.cleaned">Cleaned</span></label>
     </fieldset>
     <div class="legend" aria-hidden="true">
       <ul>
-        <li><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--recorded)" stroke-width="1.5" opacity=".7"/><circle cx="8" cy="5" r="1.8" fill="var(--recorded)"/><circle cx="15" cy="5" r="1.8" fill="var(--recorded)"/><circle cx="22" cy="5" r="1.8" fill="var(--recorded)"/></svg>Recorded fixes</li>
-        <li><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--panel)" stroke-width="6"/><line x1="1" y1="5" x2="29" y2="5" stroke="var(--cleaned)" stroke-width="3.5"/><circle cx="15" cy="5" r="3" fill="var(--cleaned)" stroke="var(--panel)" stroke-width="1.2"/></svg>Cleaned route</li>
-        <li><svg width="30" height="14"><circle cx="15" cy="7" r="6" fill="var(--stop)" fill-opacity=".55" stroke="var(--stop)" stroke-width="2"/></svg>Merged stop</li>
-        <li class="truth-key"><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--truth)" stroke-width="1.5" stroke-dasharray="4 3"/></svg>True path (demo only)</li>
+        <li><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--recorded)" stroke-width="1.5" opacity=".7"/><circle cx="8" cy="5" r="1.8" fill="var(--recorded)"/><circle cx="15" cy="5" r="1.8" fill="var(--recorded)"/><circle cx="22" cy="5" r="1.8" fill="var(--recorded)"/></svg><span data-i18n="legend.recorded">Recorded fixes</span></li>
+        <li><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--panel)" stroke-width="6"/><line x1="1" y1="5" x2="29" y2="5" stroke="var(--cleaned)" stroke-width="3.5"/><circle cx="15" cy="5" r="3" fill="var(--cleaned)" stroke="var(--panel)" stroke-width="1.2"/></svg><span data-i18n="legend.cleaned">Cleaned route</span></li>
+        <li><svg width="30" height="14"><circle cx="15" cy="7" r="6" fill="var(--stop)" fill-opacity=".55" stroke="var(--stop)" stroke-width="2"/></svg><span data-i18n="legend.stop">Merged stop</span></li>
+        <li class="truth-key"><svg width="30" height="10"><line x1="1" y1="5" x2="29" y2="5" stroke="var(--truth)" stroke-width="1.5" stroke-dasharray="4 3"/></svg><span data-i18n="legend.truth">True path (demo only)</span></li>
       </ul>
     </div>
   </div>
 
   <div class="panel" id="controls" tabindex="-1">
     <section aria-labelledby="h-trace">
-      <h2 id="h-trace">Trace</h2>
-      <p class="hint" id="demo-label" style="margin:0 0 .4rem">Simulated demo walks</p>
+      <h2 id="h-trace" data-i18n="h.trace">Trace</h2>
+      <p class="hint" id="demo-label" style="margin:0 0 .4rem" data-i18n="demo.label">Simulated demo walks</p>
       <div class="demo-row" role="group" aria-labelledby="demo-label">
-        <button type="button" data-demo="rtk_fix">RTK fix</button>
-        <button type="button" data-demo="rtk_float">RTK float</button>
-        <button type="button" data-demo="phone">Phone GPS</button>
+        <button type="button" data-demo="rtk_fix" data-i18n="demo.rtk_fix">RTK fix</button>
+        <button type="button" data-demo="rtk_float" data-i18n="demo.rtk_float">RTK float</button>
+        <button type="button" data-demo="phone" data-i18n="demo.phone">Phone GPS</button>
       </div>
       <div class="drop" id="drop">
         <input type="file" id="file" accept=".gpx,application/gpx+xml,application/xml,text/xml">
-        <label for="file">Choose a GPX file</label> or drop it here
+        <label for="file" data-i18n="drop.choose">Choose a GPX file</label><span data-i18n="drop.or"> or drop it here</span>
       </div>
       <p class="loaded" id="loaded" aria-live="polite"></p>
       <p class="error" id="error" role="alert"></p>
     </section>
 
     <section aria-labelledby="h-result">
-      <h2 id="h-result" class="sr-only">Result</h2>
+      <h2 id="h-result" class="sr-only" data-i18n="h.result">Result</h2>
       <p class="result-line" id="result-line" aria-live="polite"></p>
       <p class="result-sub" id="result-sub"></p>
       <div class="funnel" id="funnel" aria-hidden="true"></div>
@@ -936,91 +951,91 @@ footer { padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem; color: var(--graphite); f
     </section>
 
     <section aria-labelledby="h-settings">
-      <h2 id="h-settings">Settings</h2>
+      <h2 id="h-settings" data-i18n="h.settings">Settings</h2>
       <fieldset>
-        <legend class="group">Receiver</legend>
+        <legend class="group" data-i18n="receiver">Receiver</legend>
         <div class="seg">
-          <label><input type="radio" name="preset" value="rtk_fix"><span>RTK fix</span></label>
-          <label><input type="radio" name="preset" value="rtk_float" checked><span>RTK float</span></label>
-          <label><input type="radio" name="preset" value="phone"><span>Phone</span></label>
-          <label><input type="radio" name="preset" value="custom"><span>Custom</span></label>
+          <label><input type="radio" name="preset" value="rtk_fix"><span data-i18n="preset.rtk_fix">RTK fix</span></label>
+          <label><input type="radio" name="preset" value="rtk_float" checked><span data-i18n="preset.rtk_float">RTK float</span></label>
+          <label><input type="radio" name="preset" value="phone"><span data-i18n="preset.phone">Phone</span></label>
+          <label><input type="radio" name="preset" value="custom"><span data-i18n="preset.custom">Custom</span></label>
         </div>
       </fieldset>
       <div class="slider">
-        <label for="tol">Simplification tolerance</label><output for="tol" id="tol-out"></output>
+        <label for="tol" data-i18n="tol.label">Simplification tolerance</label><output for="tol" id="tol-out"></output>
         <input type="range" id="tol" min="0.1" max="5" step="0.05" aria-describedby="tol-help">
-        <small id="tol-help">No recorded fix ends up further than this from the cleaned route. Set it above the receiver's noise.</small>
+        <small id="tol-help" data-i18n="tol.help">No recorded fix ends up further than this from the cleaned route. Set it above the receiver's noise.</small>
       </div>
       <div class="slider">
-        <label for="radius">Stop radius</label><output for="radius" id="radius-out"></output>
+        <label for="radius" data-i18n="radius.label">Stop radius</label><output for="radius" id="radius-out"></output>
         <input type="range" id="radius" min="0" max="8" step="0.1" aria-describedby="radius-help">
-        <small id="radius-help">Fixes staying within this distance of their centre count as standing still. 0 turns stop merging off.</small>
+        <small id="radius-help" data-i18n="radius.help">Fixes staying within this distance of their centre count as standing still. 0 turns stop merging off.</small>
       </div>
       <div class="slider">
-        <label for="mindur">Shortest stop</label><output for="mindur" id="mindur-out"></output>
+        <label for="mindur" data-i18n="mindur.label">Shortest stop</label><output for="mindur" id="mindur-out"></output>
         <input type="range" id="mindur" min="2" max="30" step="1">
       </div>
       <div class="slider">
-        <label for="maxv">Drift allowed during a stop</label><output for="maxv" id="maxv-out"></output>
+        <label for="maxv" data-i18n="maxv.label">Drift allowed during a stop</label><output for="maxv" id="maxv-out"></output>
         <input type="range" id="maxv" min="0.05" max="0.6" step="0.05" aria-describedby="maxv-help">
-        <small id="maxv-help">Separates a stop from very slow walking.</small>
+        <small id="maxv-help" data-i18n="maxv.help">Separates a stop from very slow walking.</small>
       </div>
-      <label class="check"><input type="checkbox" id="keepstops" checked> Always keep merged stops in the route</label>
-      <label class="check" id="truth-wrap"><input type="checkbox" id="showtruth" checked> Show the true path</label>
+      <label class="check"><input type="checkbox" id="keepstops" checked> <span data-i18n="keepstops">Always keep merged stops in the route</span></label>
+      <label class="check" id="truth-wrap"><input type="checkbox" id="showtruth" checked> <span data-i18n="showtruth">Show the true path</span></label>
     </section>
 
 
     <section aria-labelledby="h-metrics">
-      <h2 id="h-metrics">Accuracy and size</h2>
+      <h2 id="h-metrics" data-i18n="h.metrics">Accuracy and size</h2>
       <dl class="metrics" id="metrics"></dl>
     </section>
 
     <section aria-labelledby="h-dl">
-      <h2 id="h-dl" class="sr-only">Downloads</h2>
+      <h2 id="h-dl" class="sr-only" data-i18n="h.dl">Downloads</h2>
       <div class="downloads">
-        <button type="button" id="dl-gpx">Download cleaned GPX</button>
-        <button type="button" id="dl-csv">Download metrics CSV</button>
+        <button type="button" id="dl-gpx" data-i18n="dl.gpx">Download cleaned GPX</button>
+        <button type="button" id="dl-csv" data-i18n="dl.csv">Download metrics CSV</button>
       </div>
     </section>
   </div>
 </section>
 
-<section class="details" aria-label="Details">
+<section class="details" aria-label="Details" data-i18n-aria="aria.details">
   <div>
-    <h2>Distance from the cleaned route</h2>
-    <p class="lede">Every recorded fix, in walking order. Shaded parts were merged into a stop. Hover or tap to find the fix on the map.</p>
+    <h2 data-i18n="h.chart">Distance from the cleaned route</h2>
+    <p class="lede" data-i18n="chart.lede">Every recorded fix, in walking order. Shaded parts were merged into a stop. Hover or tap to find the fix on the map.</p>
     <div class="chart" id="chart"></div>
   </div>
   <div>
-    <h2>Stops</h2>
+    <h2 data-i18n="h.stops">Stops</h2>
     <p class="lede" id="stops-lede"></p>
     <div id="stops"></div>
   </div>
 </section>
 
-<section class="method" aria-label="Method">
+<section class="method" aria-label="Method" data-i18n-aria="aria.method">
   <div>
-    <h2>How the cleaning works</h2>
+    <h2 data-i18n="h.method">How the cleaning works</h2>
     <ol>
-      <li><div><h3>Check the fixes</h3><p>Drop fixes with no position or timestamp, duplicates, and single jumps faster than 4 m/s, which are usually signal reflections.</p></div></li>
-      <li><div><h3>Work in metres</h3><p>Convert latitude and longitude to the local UTM grid, so every tolerance is a real distance on the ground.</p></div></li>
-      <li><div><h3>Merge stops</h3><p>A run of fixes is a stop when all of them stay within the stop radius for the shortest-stop time and the walker drifts slower than the allowed speed. The run becomes one fix at its median position, keeping its start and end time. Speed alone is not enough: noise makes a standing person look like they move, and careful walking can be slow.</p></div></li>
-      <li><div><h3>Simplify straight stretches</h3><p>Douglas–Peucker joins the ends of a stretch and keeps the fix furthest from that line if it is beyond the tolerance, then repeats on both halves. A turn is always the furthest fix of its stretch, so turns survive; fixes along a straight street do not.</p></div></li>
+      <li><div><h3 data-i18n="step1.h">Check the fixes</h3><p data-i18n="step1.p">Drop fixes with no position or timestamp, duplicates, and single jumps faster than 4 m/s, which are usually signal reflections.</p></div></li>
+      <li><div><h3 data-i18n="step2.h">Work in metres</h3><p data-i18n="step2.p">Convert latitude and longitude to the local UTM grid, so every tolerance is a real distance on the ground.</p></div></li>
+      <li><div><h3 data-i18n="step3.h">Merge stops</h3><p data-i18n="step3.p">A run of fixes is a stop when all of them stay within the stop radius for the shortest-stop time and the walker drifts slower than the allowed speed. The run becomes one fix at its median position, keeping its start and end time. Speed alone is not enough: noise makes a standing person look like they move, and careful walking can be slow.</p></div></li>
+      <li><div><h3 data-i18n="step4.h">Simplify straight stretches</h3><p data-i18n="step4.p">Douglas–Peucker joins the ends of a stretch and keeps the fix furthest from that line if it is beyond the tolerance, then repeats on both halves. A turn is always the furthest fix of its stretch, so turns survive; fixes along a straight street do not.</p></div></li>
     </ol>
   </div>
   <div>
-    <h2>Limits</h2>
+    <h2 data-i18n="h.limits">Limits</h2>
     <ul>
-      <li>The demo walks are simulated around Place du Vieux-Marché in Rouen, with a known true path. They are not real recordings. The street layout is mostly straight, so real routes with curves keep more fixes.</li>
-      <li>With phone-grade GPS (about 3 m of error) stops are found unreliably and no simplification can recover the true path. The method is meant for RTK receivers.</li>
-      <li>A receiver that is consistently offset to one side stays offset. Cleaning removes noise, not bias.</li>
-      <li>Default settings have not yet been tuned on real RTK traces.</li>
+      <li data-i18n="limit1">The demo walks are simulated around Place du Vieux-Marché in Rouen, with a known true path. They are not real recordings. The street layout is mostly straight, so real routes with curves keep more fixes.</li>
+      <li data-i18n="limit2">With phone-grade GPS (about 3 m of error) stops are found unreliably and no simplification can recover the true path. The method is meant for RTK receivers.</li>
+      <li data-i18n="limit3">A receiver that is consistently offset to one side stays offset. Cleaning removes noise, not bias.</li>
+      <li data-i18n="limit4">Default settings have not yet been tuned on real RTK traces.</li>
     </ul>
   </div>
 </section>
 </main>
 
-<footer>
+<footer data-i18n-html="footer">
   Built by Sujai Samraj, NEOMA Business School, Rouen. The same algorithms run in Python with a test suite and an evaluation report in the <a href="https://github.com/sujaisam45/gps-track-optimizer">GitHub repository</a>.
 </footer>
 
@@ -1043,6 +1058,7 @@ footer { padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem; color: var(--graphite); f
 
   /* ---------- small helpers ---------- */
   const hyp = Math.hypot;
+  const fail = (code, msg) => { const e = new Error(msg); e.code = code; throw e; };
   function median(arr) {
     const a = arr.filter((v) => Number.isFinite(v)).sort((p, q) => p - q);
     if (!a.length) return NaN;
@@ -1078,7 +1094,7 @@ footer { padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem; color: var(--graphite); f
   /* ---------- GPX in / out ---------- */
   function parseGpx(text) {
     const doc = new DOMParser().parseFromString(text, "application/xml");
-    if (doc.getElementsByTagName("parsererror").length) throw new Error("This file is not valid GPX/XML.");
+    if (doc.getElementsByTagName("parsererror").length) fail("notXml", "This file is not valid GPX/XML.");
     const kid = (el, name) => { for (const c of el.children) if (c.localName === name) return c; return null; };
     const num = (v) => (v === null || v === undefined || v === "" ? NaN : Number(v));
     const readPoint = (el, track, segment) => {
@@ -1105,7 +1121,7 @@ footer { padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem; color: var(--graphite); f
         for (const p of rte.children) if (p.localName === "rtept") pts.push(readPoint(p, ri, 0));
       });
     }
-    if (!pts.length) throw new Error("No track points found. The file needs <trkpt> or <rtept> elements.");
+    if (!pts.length) fail("noPoints", "No track points found. The file needs <trkpt> or <rtept> elements.");
     return pts;
   }
 
@@ -1160,7 +1176,7 @@ footer { padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem; color: var(--graphite); f
     const seen = new Set();
     pts = pts.filter((p) => { const k = `${p.track}|${p.segment}|${p.time}`; if (seen.has(k)) return false; seen.add(k); return true; });
     rep.duplicates = n - pts.length;
-    if (!pts.length) throw new Error("No usable points: every point is missing a position or a timestamp.");
+    if (!pts.length) fail("noUsable", "No usable points: every point is missing a position or a timestamp.");
 
     const proj = makeProjector(median(pts.map((p) => p.lat)), median(pts.map((p) => p.lon)));
     for (const p of pts) [p.x, p.y] = proj.toXY(p.lat, p.lon);
@@ -1401,6 +1417,199 @@ footer { padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem; color: var(--graphite); f
 
 </script>
 <script>
+/* Interface text in English and French. {name} placeholders are filled by app.js. */
+window.GTO_I18N = {
+  en: {
+    "meta.description": "Clean recorded walking traces: merge the fixes logged while standing still, simplify straight stretches, and measure the accuracy cost. Runs entirely in your browser.",
+    skip: "Skip to controls",
+    intro: "Cleans recorded walking traces: merges the fixes logged while standing still, keeps every turn, and measures how far the cleaned route strays from the recording.",
+    gh: "Source code and report",
+    privacy: "Your GPX file is processed in this browser tab. It is never uploaded anywhere.",
+    "lang.legend": "Language",
+    "aria.workspace": "Track and settings",
+    "aria.map": "Map of the recorded and cleaned track. A text summary and the list of stops follow below the map.",
+    "view.legend": "Show on map",
+    "view.both": "Both", "view.recorded": "Recorded", "view.cleaned": "Cleaned",
+    "legend.recorded": "Recorded fixes", "legend.cleaned": "Cleaned route", "legend.stop": "Merged stop", "legend.truth": "True path (demo only)",
+    "h.trace": "Trace",
+    "demo.label": "Simulated demo walks",
+    "demo.rtk_fix": "RTK fix", "demo.rtk_float": "RTK float", "demo.phone": "Phone GPS",
+    "drop.choose": "Choose a GPX file", "drop.or": " or drop it here",
+    "h.result": "Result",
+    "h.settings": "Settings",
+    receiver: "Receiver",
+    "preset.rtk_fix": "RTK fix", "preset.rtk_float": "RTK float", "preset.phone": "Phone", "preset.custom": "Custom",
+    "tol.label": "Simplification tolerance",
+    "tol.help": "No recorded fix ends up further than this from the cleaned route. Set it above the receiver's noise.",
+    "radius.label": "Stop radius",
+    "radius.help": "Fixes staying within this distance of their centre count as standing still. 0 turns stop merging off.",
+    "mindur.label": "Shortest stop",
+    "maxv.label": "Drift allowed during a stop",
+    "maxv.help": "Separates a stop from very slow walking.",
+    keepstops: "Always keep merged stops in the route",
+    showtruth: "Show the true path",
+    "h.metrics": "Accuracy and size",
+    "h.dl": "Downloads",
+    "dl.gpx": "Download cleaned GPX", "dl.csv": "Download metrics CSV",
+    "aria.details": "Details",
+    "h.chart": "Distance from the cleaned route",
+    "chart.lede": "Every recorded fix, in walking order. Shaded parts were merged into a stop. Hover or tap to find the fix on the map.",
+    "h.stops": "Stops",
+    "aria.method": "Method",
+    "h.method": "How the cleaning works",
+    "step1.h": "Check the fixes",
+    "step1.p": "Drop fixes with no position or timestamp, duplicates, and single jumps faster than 4 m/s, which are usually signal reflections.",
+    "step2.h": "Work in metres",
+    "step2.p": "Convert latitude and longitude to the local UTM grid, so every tolerance is a real distance on the ground.",
+    "step3.h": "Merge stops",
+    "step3.p": "A run of fixes is a stop when all of them stay within the stop radius for the shortest-stop time and the walker drifts slower than the allowed speed. The run becomes one fix at its median position, keeping its start and end time. Speed alone is not enough: noise makes a standing person look like they move, and careful walking can be slow.",
+    "step4.h": "Simplify straight stretches",
+    "step4.p": "Douglas–Peucker joins the ends of a stretch and keeps the fix furthest from that line if it is beyond the tolerance, then repeats on both halves. A turn is always the furthest fix of its stretch, so turns survive; fixes along a straight street do not.",
+    "h.limits": "Limits",
+    limit1: "The demo walks are simulated around Place du Vieux-Marché in Rouen, with a known true path. They are not real recordings. The street layout is mostly straight, so real routes with curves keep more fixes.",
+    limit2: "With phone-grade GPS (about 3 m of error) stops are found unreliably and no simplification can recover the true path. The method is meant for RTK receivers.",
+    limit3: "A receiver that is consistently offset to one side stays offset. Cleaning removes noise, not bias.",
+    limit4: "Default settings have not yet been tuned on real RTK traces.",
+    footer: 'Built by Sujai Samraj, NEOMA Business School, Rouen. The same algorithms run in Python with a test suite and an evaluation report in the <a href="https://github.com/sujaisam45/gps-track-optimizer">GitHub repository</a>.',
+
+    "noise.rtk_fix": "RTK fix", "noise.rtk_float": "RTK float", "noise.phone": "phone GPS",
+    "loaded.demo": "Showing: simulated 505 m walk in Rouen with {noise} noise and 3 stops.",
+    "loaded.file": "Showing: {name}, {n} fixes in {s} {segs}.",
+    segment: "segment", segments: "segments",
+    "err.tooBig": "That file is over 50 MB. Split it into shorter walks and try again.",
+    "err.read": "Could not read {name}. {msg}",
+    "err.notXml": "This file is not valid GPX/XML.",
+    "err.noPoints": "No track points found. The file needs <trkpt> or <rtept> elements.",
+    "err.noUsable": "No usable points: every point is missing a position or a timestamp.",
+    "result.line": '<span class="from">{raw} fixes</span> became <span class="to">{final}</span>',
+    "result.plain": "{raw} fixes became {final}.",
+    "result.sub": "{pct}% fewer, {stops}. Every moving fix is within {dev} of the cleaned route.",
+    "stops.one": "1 stop merged", "stops.many": "{n} stops merged", "stops.zero": "no stops merged",
+    "m.max": "Largest gap", "m.max.s": "Recorded fix furthest from the cleaned route, stops excluded",
+    "m.mean": "Average gap", "m.mean.s": "Over all moving fixes",
+    "m.haus": "Hausdorff distance", "m.haus.s": "Worst mismatch between the two lines, in either direction",
+    "m.jitter": "Jitter inside stops", "m.jitter.s": "How far fixes wandered while standing still",
+    "m.len": "Route length", "m.len.s": "Recorded, then cleaned. Jitter adds distance that was never walked.",
+    "m.truth": "Error against the true path", "m.truth.s": "Average, recorded then cleaned. Only known for the simulated walks.",
+    "m.size": "GPX file size", "m.size.s": "Recorded, then cleaned",
+    "m.removed": "Removed by checks", "m.removed.s": "Missing position or time, duplicates, jumps over 4 m/s",
+    "m.time": "Processing time", "m.time.s": "In this browser",
+    "unit.B": "B", "unit.KB": "KB",
+    "f.recorded": "Recorded", "f.checked": "After checks", "f.stops": "After merging stops", "f.simplified": "After simplifying",
+    "f.note.one": "Each dot is one GPS fix.", "f.note.many": "Each dot is {n} GPS fixes.",
+    off: "off",
+    "chart.empty": "Not enough fixes to compare.",
+    "chart.aria": "Line chart of each recorded fix's distance from the cleaned route along the walk. Maximum {max} for moving fixes; tolerance {tol}.",
+    "chart.x": "metres walked", "chart.y": "m off",
+    "chart.tol": "tolerance {v}",
+    "chart.tip": "{d} m: {dev} off", "chart.inStop": " (in a stop)",
+    "stops.lede.demo": "This simulated walk has 3 real stops of 30 s, 45 s and 20 s. Compare them with what was found.",
+    "stops.lede.file": "Runs of fixes where the walker stood still, each merged into one fix.",
+    "stops.none": "No stops found with these settings.",
+    "stops.none.off": "Stop merging is off.", "stops.none.try": "Try a larger stop radius.",
+    "th.stop": "Stop", "th.starts": "Starts", "th.lasted": "Lasted", "th.merged": "Fixes merged", "th.map": "Map",
+    "stops.into": "{t} into the walk",
+    "stops.show": "Show on map",
+    "stop.tooltip": "Stop {i}: {s} s, {n} fixes merged into 1",
+  },
+
+  fr: {
+    "meta.description": "Nettoie les traces de marche enregistrées : fusionne les points relevés à l'arrêt, simplifie les lignes droites et mesure ce que cela coûte en précision. Tout se passe dans votre navigateur.",
+    skip: "Aller aux réglages",
+    intro: "Nettoie les traces de marche enregistrées : fusionne les points relevés à l'arrêt, conserve chaque virage et mesure l'écart entre le trajet nettoyé et l'enregistrement.",
+    gh: "Code source et rapport",
+    privacy: "Votre fichier GPX est traité dans cet onglet du navigateur. Il n'est jamais envoyé nulle part.",
+    "lang.legend": "Langue",
+    "aria.workspace": "Trace et réglages",
+    "aria.map": "Carte de la trace enregistrée et du trajet nettoyé. Un résumé en texte et la liste des arrêts se trouvent sous la carte.",
+    "view.legend": "Afficher sur la carte",
+    "view.both": "Les deux", "view.recorded": "Brute", "view.cleaned": "Nettoyée",
+    "legend.recorded": "Points enregistrés", "legend.cleaned": "Trajet nettoyé", "legend.stop": "Arrêt fusionné", "legend.truth": "Vrai parcours (démo seulement)",
+    "h.trace": "Trace",
+    "demo.label": "Marches de démonstration simulées",
+    "demo.rtk_fix": "RTK fixe", "demo.rtk_float": "RTK flottant", "demo.phone": "GPS téléphone",
+    "drop.choose": "Choisir un fichier GPX", "drop.or": " ou le déposer ici",
+    "h.result": "Résultat",
+    "h.settings": "Réglages",
+    receiver: "Récepteur",
+    "preset.rtk_fix": "RTK fixe", "preset.rtk_float": "RTK flottant", "preset.phone": "Téléphone", "preset.custom": "Manuel",
+    "tol.label": "Tolérance de simplification",
+    "tol.help": "Aucun point enregistré ne finit plus loin que cette distance du trajet nettoyé. Réglez-la au-dessus du bruit du récepteur.",
+    "radius.label": "Rayon d'arrêt",
+    "radius.help": "Les points qui restent à cette distance de leur centre comptent comme un arrêt. 0 désactive la fusion des arrêts.",
+    "mindur.label": "Arrêt le plus court",
+    "maxv.label": "Dérive tolérée pendant un arrêt",
+    "maxv.help": "Distingue un arrêt d'une marche très lente.",
+    keepstops: "Toujours garder les arrêts fusionnés dans le trajet",
+    showtruth: "Afficher le vrai parcours",
+    "h.metrics": "Précision et taille",
+    "h.dl": "Téléchargements",
+    "dl.gpx": "Télécharger le GPX nettoyé", "dl.csv": "Télécharger les mesures (CSV)",
+    "aria.details": "Détails",
+    "h.chart": "Écart au trajet nettoyé",
+    "chart.lede": "Chaque point enregistré, dans l'ordre de la marche. Les zones ombrées ont été fusionnées en arrêt. Survolez ou touchez le graphique pour retrouver le point sur la carte.",
+    "h.stops": "Arrêts",
+    "aria.method": "Méthode",
+    "h.method": "Comment fonctionne le nettoyage",
+    "step1.h": "Vérifier les points",
+    "step1.p": "Supprime les points sans position ni horodatage, les doublons et les sauts isolés de plus de 4 m/s, en général dus à des réflexions du signal.",
+    "step2.h": "Travailler en mètres",
+    "step2.p": "Convertit latitude et longitude dans la grille UTM locale, pour que chaque tolérance soit une vraie distance au sol.",
+    "step3.h": "Fusionner les arrêts",
+    "step3.p": "Une suite de points est un arrêt quand tous restent dans le rayon d'arrêt pendant la durée minimale et que le marcheur dérive moins vite que la vitesse tolérée. La suite devient un seul point, à sa position médiane, avec son heure de début et de fin. La vitesse seule ne suffit pas : le bruit fait bouger une personne immobile, et une marche prudente peut être lente.",
+    "step4.h": "Simplifier les lignes droites",
+    "step4.p": "Douglas–Peucker relie les extrémités d'un tronçon et garde le point le plus éloigné de cette ligne s'il dépasse la tolérance, puis recommence sur les deux moitiés. Un virage est toujours le point le plus éloigné de son tronçon : les virages sont conservés, les points le long d'une rue droite disparaissent.",
+    "h.limits": "Limites",
+    limit1: "Les marches de démonstration sont simulées autour de la place du Vieux-Marché à Rouen, avec un vrai parcours connu. Ce ne sont pas de vrais enregistrements. Les rues sont surtout droites : un vrai trajet avec des courbes garde plus de points.",
+    limit2: "Avec un GPS de téléphone (environ 3 m d'erreur), les arrêts sont mal détectés et aucune simplification ne retrouve le vrai parcours. La méthode vise les récepteurs RTK.",
+    limit3: "Un récepteur toujours décalé du même côté le reste. Le nettoyage enlève le bruit, pas le biais.",
+    limit4: "Les réglages par défaut n'ont pas encore été ajustés sur de vraies traces RTK.",
+    footer: 'Réalisé par Sujai Samraj, NEOMA Business School, Rouen. Les mêmes algorithmes existent en Python, avec des tests et un rapport d\'évaluation, dans le <a href="https://github.com/sujaisam45/gps-track-optimizer">dépôt GitHub</a>.',
+
+    "noise.rtk_fix": "RTK fixe", "noise.rtk_float": "RTK flottant", "noise.phone": "GPS de téléphone",
+    "loaded.demo": "Affiché : marche simulée de 505 m à Rouen, bruit {noise}, 3 arrêts.",
+    "loaded.file": "Affiché : {name}, {n} points en {s} {segs}.",
+    segment: "segment", segments: "segments",
+    "err.tooBig": "Ce fichier dépasse 50 Mo. Découpez-le en marches plus courtes et réessayez.",
+    "err.read": "Impossible de lire {name}. {msg}",
+    "err.notXml": "Ce fichier n'est pas un GPX/XML valide.",
+    "err.noPoints": "Aucun point trouvé. Le fichier doit contenir des éléments <trkpt> ou <rtept>.",
+    "err.noUsable": "Aucun point utilisable : il manque à chaque point une position ou un horodatage.",
+    "result.line": '<span class="from">{raw} points</span> réduits à <span class="to">{final}</span>',
+    "result.plain": "{raw} points réduits à {final}.",
+    "result.sub": "{pct} % de points en moins, {stops}. Chaque point en mouvement est à moins de {dev} du trajet nettoyé.",
+    "stops.one": "1 arrêt fusionné", "stops.many": "{n} arrêts fusionnés", "stops.zero": "aucun arrêt fusionné",
+    "m.max": "Écart maximal", "m.max.s": "Point enregistré le plus éloigné du trajet nettoyé, arrêts exclus",
+    "m.mean": "Écart moyen", "m.mean.s": "Sur tous les points en mouvement",
+    "m.haus": "Distance de Hausdorff", "m.haus.s": "Pire écart entre les deux lignes, dans un sens ou dans l'autre",
+    "m.jitter": "Dispersion pendant les arrêts", "m.jitter.s": "Jusqu'où les points ont dérivé à l'arrêt",
+    "m.len": "Longueur du trajet", "m.len.s": "Enregistré, puis nettoyé. La dispersion ajoute une distance jamais parcourue.",
+    "m.truth": "Erreur par rapport au vrai parcours", "m.truth.s": "Moyenne, enregistrée puis nettoyée. Connue seulement pour les marches simulées.",
+    "m.size": "Taille du fichier GPX", "m.size.s": "Enregistré, puis nettoyé",
+    "m.removed": "Retirés par les vérifications", "m.removed.s": "Position ou heure manquante, doublons, sauts de plus de 4 m/s",
+    "m.time": "Temps de calcul", "m.time.s": "Dans ce navigateur",
+    "unit.B": "o", "unit.KB": "Ko",
+    "f.recorded": "Enregistrés", "f.checked": "Après vérification", "f.stops": "Après fusion des arrêts", "f.simplified": "Après simplification",
+    "f.note.one": "Chaque pastille représente un point GPS.", "f.note.many": "Chaque pastille représente {n} points GPS.",
+    off: "désactivé",
+    "chart.empty": "Pas assez de points pour comparer.",
+    "chart.aria": "Courbe de l'écart de chaque point enregistré au trajet nettoyé, le long de la marche. Maximum {max} pour les points en mouvement ; tolérance {tol}.",
+    "chart.x": "mètres parcourus", "chart.y": "écart (m)",
+    "chart.tol": "tolérance {v}",
+    "chart.tip": "{d} m : écart de {dev}", "chart.inStop": " (pendant un arrêt)",
+    "stops.lede.demo": "Cette marche simulée comporte 3 vrais arrêts de 30 s, 45 s et 20 s. Comparez-les avec ce qui a été détecté.",
+    "stops.lede.file": "Suites de points où le marcheur était immobile, chacune fusionnée en un seul point.",
+    "stops.none": "Aucun arrêt trouvé avec ces réglages.",
+    "stops.none.off": "La fusion des arrêts est désactivée.", "stops.none.try": "Essayez un rayon d'arrêt plus grand.",
+    "th.stop": "Arrêt", "th.starts": "Début", "th.lasted": "Durée", "th.merged": "Points fusionnés", "th.map": "Carte",
+    "stops.into": "à {t} de marche",
+    "stops.show": "Voir sur la carte",
+    "stop.tooltip": "Arrêt {i} : {s} s, {n} points fusionnés en 1",
+  },
+};
+
+</script>
+<script>
 window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[0.0,49.44290002,1.08839996,15.04],[1.0,49.44290027,1.08841668,14.53],[2.0,49.44290048,1.08843335,15.16],[3.0,49.44290091,1.08845016,14.88],[4.0,49.44290105,1.08846691,15.58],[5.0,49.4429014,1.08848363,14.68],[6.0,49.4429016,1.08850036,14.33],[7.0,49.44290189,1.08851727,15.02],[8.0,49.44290216,1.08853372,14.9],[9.0,49.44290233,1.08855022,14.88],[10.0,49.44290253,1.08856686,14.36],[11.0,49.44290295,1.08858352,15.13],[12.0,49.44290322,1.08860028,15.5],[13.0,49.44290343,1.08861686,14.43],[14.0,49.44290369,1.08863361,15.35],[15.0,49.44290404,1.08865021,14.83],[16.0,49.44290423,1.08866699,15.7],[17.0,49.44290449,1.08868397,15.13],[18.0,49.44290487,1.08870069,14.94],[19.0,49.44290509,1.08871748,15.33],[20.0,49.44290543,1.08873427,15.16],[21.0,49.44290569,1.08875108,14.82],[22.0,49.44290586,1.08876785,15.21],[23.0,49.44290617,1.08878485,14.85],[24.0,49.44290662,1.08880146,14.46],[25.0,49.44290685,1.08881832,15.61],[26.0,49.44290715,1.08883513,14.9],[27.0,49.44290747,1.08885188,14.82],[28.0,49.4429078,1.08886865,15.1],[29.0,49.44290804,1.08888552,14.53],[30.0,49.44290824,1.08890224,14.59],[31.0,49.44290844,1.088919,14.85],[32.0,49.44290873,1.08893573,14.84],[33.0,49.44290909,1.08895258,15.02],[34.0,49.44290932,1.0889692,15.34],[35.0,49.44290944,1.08898598,14.86],[36.0,49.44290982,1.0890027,15.15],[37.0,49.44291015,1.08901962,15.18],[38.0,49.44291038,1.08903624,14.67],[39.0,49.44291077,1.08905285,15.07],[40.0,49.4429111,1.08906955,14.72],[41.0,49.44291131,1.08908633,15.32],[42.0,49.44291149,1.08910321,15.14],[43.0,49.44291176,1.08911982,15.0],[44.0,49.4429121,1.08913681,14.6],[45.0,49.44291248,1.0891535,15.03],[46.0,49.44291279,1.08917025,14.77],[47.0,49.44291318,1.08918694,15.21],[48.0,null,null,14.96],[49.0,49.44291353,1.08922002,14.76],[50.0,49.44291368,1.08923678,15.28],[51.0,49.44291424,1.08925356,15.22],[52.0,49.44291438,1.08927019,14.82],[53.0,49.44291471,1.08928702,15.35],[54.0,49.442915,1.08930385,14.91],[55.0,49.44291533,1.08932052,14.91],[56.0,49.44291551,1.08933726,15.04],[57.0,49.44291572,1.08935397,14.77],[58.0,49.4429159,1.08937083,14.87],[59.0,49.44291626,1.08938774,14.95],[60.0,49.44291649,1.08940445,15.46],[61.0,49.44291662,1.08942123,15.45],[62.0,49.44291693,1.08943771,14.92],[63.0,49.4429173,1.08945436,15.48],[64.0,49.44291763,1.08947084,14.99],[65.0,49.44291801,1.0894876,15.11],[66.0,49.44291821,1.0895044,15.27],[67.0,49.44291848,1.08952118,15.09],[68.0,49.4429188,1.08953805,15.72],[69.0,49.44291899,1.08955486,15.07],[70.0,49.44291927,1.08957183,14.64],[71.0,49.44291917,1.08957178,15.39],[72.0,49.44291912,1.08957172,14.88],[73.0,49.4429191,1.08957179,14.91],[74.0,49.44291919,1.08957206,14.1],[75.0,49.44291916,1.08957199,15.3],[76.0,49.44291917,1.08957183,15.25],[77.0,49.44291918,1.08957178,15.24],[78.0,49.44291911,1.08957155,15.29],[79.0,49.44291905,1.08957191,15.51],[80.0,49.44291917,1.08957189,14.99],[81.0,49.44291907,1.08957196,15.28],[82.0,null,null,14.78],[83.0,49.44291916,1.08957172,14.89],[84.0,49.4429192,1.08957165,15.32],[85.0,49.44291917,1.08957171,15.12],[86.0,49.44291918,1.08957153,14.6],[87.0,49.44291919,1.08957148,15.11],[88.0,49.44291917,1.08957171,14.95],[89.0,49.44291912,1.0895718,14.75],[90.0,49.44291908,1.08957174,15.13],[91.0,49.4429191,1.08957183,14.88],[92.0,49.44318734,1.08961639,14.53],[93.0,49.44291917,1.08957187,14.67],[94.0,49.4429192,1.08957199,15.53],[95.0,49.44291924,1.08957177,14.55],[96.0,null,null,15.07],[97.0,49.44291938,1.08957192,15.18],[98.0,49.4429194,1.08957205,15.19],[99.0,49.44291953,1.0895719,14.63],[100.0,49.44291961,1.08957176,14.9],[101.0,49.44293045,1.08957139,15.04],[102.0,49.44294129,1.08957129,15.24],[103.0,49.44295192,1.08957073,14.81],[104.0,49.44296259,1.08957049,14.65],[105.0,49.44297352,1.08956986,15.3],[106.0,49.44298409,1.08956928,15.33],[107.0,49.44299482,1.08956899,15.11],[108.0,49.44300566,1.08956848,14.82],[109.0,49.44301635,1.08956796,15.12],[110.0,49.44302707,1.08956765,15.03],[111.0,49.44303796,1.08956694,15.25],[112.0,49.44304878,1.0895665,14.63],[113.0,49.44305945,1.08956598,15.03],[114.0,49.4430702,1.08956558,14.95],[115.0,49.44308091,1.08956523,14.67],[116.0,49.4430918,1.08956479,15.06],[117.0,49.4431025,1.08956467,15.01],[118.0,49.4431134,1.08956444,14.88],[119.0,49.44312401,1.08956402,15.12],[120.0,49.4431348,1.08956347,14.57],[121.0,49.44314567,1.08956311,14.98],[122.0,49.4431566,1.08956265,15.13],[123.0,49.44316718,1.08956211,15.09],[124.0,49.44317785,1.0895617,15.32],[125.0,49.44318865,1.08956095,14.64],[126.0,49.44319951,1.08956068,14.55],[127.0,49.44321024,1.08956007,15.07],[128.0,49.44322105,1.08955992,15.14],[129.0,49.44323193,1.08955958,15.64],[130.0,49.44324276,1.08955923,15.18],[131.0,49.44325359,1.08955869,14.74],[132.0,49.4432644,1.08955842,15.24],[133.0,49.4432753,1.08955773,14.75],[134.0,49.44328614,1.0895573,14.55],[135.0,49.44329675,1.08955694,15.78],[136.0,49.44330772,1.08955673,15.1],[137.0,49.44331859,1.08955622,15.21],[138.0,49.44332914,1.0895558,15.17],[139.0,49.44333996,1.08955552,15.54],[140.0,49.44335063,1.08955504,15.09],[141.0,49.44336151,1.08955449,15.37],[142.0,49.44337234,1.08955452,14.69],[143.0,49.44338323,1.08955397,14.58],[144.0,49.44339392,1.08955354,15.43],[145.0,49.44340485,1.08955275,15.44],[146.0,49.44341578,1.0895526,15.15],[147.0,49.44342659,1.08955227,15.07],[148.0,49.4434373,1.08955188,15.05],[149.0,49.44344811,1.08955134,14.79],[150.0,49.44345887,1.08955104,15.46],[151.0,49.44346489,1.08956489,15.2],[152.0,49.44347107,1.0895785,15.15],[153.0,49.44347713,1.08959239,15.11],[154.0,49.44348302,1.08960626,15.31],[155.0,49.44348923,1.08962,15.15],[156.0,49.44349527,1.08963381,15.22],[157.0,49.44350124,1.08964761,14.65],[158.0,49.44350726,1.08966135,15.15],[159.0,49.44351344,1.08967505,15.66],[160.0,49.44351949,1.08968873,14.84],[161.0,49.44352545,1.08970283,14.96],[162.0,49.44353163,1.08971648,15.27],[163.0,49.44353757,1.08973034,15.29],[164.0,49.44354376,1.08974429,15.19],[165.0,49.44354988,1.08975796,14.51],[166.0,49.44355587,1.08977173,15.15],[167.0,49.4435618,1.08978537,14.64],[168.0,49.44356782,1.08979945,14.75],[169.0,49.44357396,1.08981349,15.16],[170.0,49.44358005,1.0898272,14.91],[171.0,49.44358613,1.0898413,15.24],[172.0,49.44359204,1.08985497,15.94],[173.0,49.44359821,1.08986876,15.23],[174.0,49.44360427,1.08988267,15.22],[175.0,49.44361026,1.08989652,14.73],[176.0,49.4436163,1.08991041,14.81],[177.0,49.44362237,1.08992413,14.68],[178.0,49.44362843,1.08993783,14.84],[179.0,49.44363452,1.08995174,14.67],[180.0,49.44364067,1.08996555,14.8],[181.0,49.44364679,1.08997948,14.94],[182.0,49.44365276,1.08999305,14.7],[183.0,49.44365872,1.09000664,14.57],[184.0,49.44366479,1.0900206,14.59],[185.0,49.44367075,1.09003435,15.14],[186.0,49.44367679,1.09004814,15.02],[187.0,49.44368306,1.09006196,15.31],[188.0,49.44368898,1.09007589,15.31],[189.0,49.44369506,1.09008951,14.9],[190.0,49.44370102,1.0901034,15.2],[191.0,49.44370698,1.0901172,14.57],[192.0,49.44371312,1.09013122,15.68],[193.0,49.4437192,1.09014518,15.36],[194.0,49.44372519,1.09015894,14.94],[195.0,49.4437313,1.09017273,14.65],[196.0,49.44373725,1.09018638,15.11],[197.0,49.4437433,1.09020039,14.44],[198.0,49.44374944,1.09021427,14.77],[199.0,49.44375543,1.09022783,15.22],[200.0,49.44376165,1.09024161,15.02],[201.0,49.44376769,1.09025549,14.85],[202.0,49.44377376,1.09026918,15.29],[203.0,null,null,14.69],[204.0,49.44378574,1.09029684,15.09],[205.0,49.44378578,1.09029689,14.85],[206.0,49.44378584,1.09029735,14.75],[207.0,49.44378579,1.09029723,15.14],[208.0,49.44378571,1.09029738,14.7],[209.0,49.44359356,1.09000715,15.57],[210.0,49.44378565,1.09029754,14.82],[211.0,49.44378573,1.09029745,15.6],[212.0,49.44378589,1.09029717,14.67],[213.0,49.44378573,1.09029724,15.18],[214.0,49.44378575,1.09029722,14.64],[215.0,49.44378567,1.09029718,14.6],[216.0,null,null,15.05],[217.0,49.4437856,1.09029694,15.2],[218.0,49.44378565,1.09029706,14.62],[219.0,49.44378574,1.09029672,15.36],[220.0,49.44378568,1.09029672,14.76],[221.0,49.44378574,1.09029673,15.04],[222.0,49.44378563,1.09029696,15.11],[223.0,49.44378565,1.09029715,15.18],[224.0,49.44378574,1.09029692,14.46],[225.0,49.44378585,1.09029699,15.49],[226.0,49.44378572,1.09029696,15.17],[227.0,49.44378578,1.09029689,14.87],[228.0,49.44378572,1.09029705,14.69],[229.0,49.44378558,1.09029704,14.49],[230.0,null,null,14.59],[231.0,49.44378557,1.09029695,15.16],[232.0,49.44378546,1.09029709,14.9],[233.0,49.44378552,1.09029689,14.66],[234.0,49.4437855,1.09029675,14.84],[235.0,49.44378557,1.09029674,15.47],[236.0,49.44378554,1.09029681,14.9],[237.0,49.44378548,1.09029695,14.82],[238.0,49.44378535,1.09029691,15.41],[239.0,49.4437854,1.09029705,15.14],[240.0,49.44378548,1.09029703,15.01],[241.0,49.44378554,1.09029704,14.82],[242.0,49.44378548,1.09029722,14.53],[243.0,49.44378547,1.09029701,14.65],[244.0,49.44378552,1.09029685,14.86],[245.0,49.44378552,1.09029699,14.93],[246.0,49.44378546,1.09029682,15.11],[247.0,49.44378537,1.09029707,15.17],[248.0,49.44378533,1.09029707,15.07],[249.0,49.44378528,1.0902972,15.07],[250.0,49.44379616,1.09029667,14.7],[251.0,49.44380719,1.09029627,14.35],[252.0,49.44381796,1.09029589,14.84],[253.0,49.44382884,1.09029542,14.71],[254.0,49.44383972,1.0902949,14.8],[255.0,49.44385073,1.09029451,14.92],[256.0,49.44386169,1.09029386,14.63],[257.0,49.4438726,1.0902935,14.67],[258.0,49.44388352,1.09029342,14.97],[259.0,49.4438944,1.09029268,15.03],[260.0,49.44390527,1.09029233,14.8],[261.0,49.44391611,1.09029194,15.15],[262.0,49.44392703,1.09029152,14.93],[263.0,49.44393784,1.09029115,14.69],[264.0,49.44394877,1.09029067,15.01],[265.0,49.44395954,1.09029012,15.56],[266.0,49.44397049,1.09028979,14.8],[267.0,49.44398143,1.09028914,15.35],[268.0,49.44399227,1.09028859,15.41],[269.0,49.44400296,1.09028818,15.45],[270.0,49.4440139,1.09028783,14.75],[271.0,null,null,15.6],[272.0,49.44403564,1.09028701,15.03],[273.0,49.44404655,1.09028648,14.92],[274.0,49.44405729,1.09028629,14.93],[275.0,49.44406828,1.09028587,15.18],[276.0,49.44407917,1.09028543,15.02],[277.0,49.44408995,1.09028504,14.95],[278.0,49.44410089,1.09028469,15.39],[279.0,49.44411188,1.09028434,14.78],[280.0,49.44412273,1.09028384,14.69],[281.0,49.44413368,1.09028338,15.24],[282.0,49.44414446,1.09028312,15.21],[283.0,49.44415551,1.09028288,15.33],[284.0,49.44416629,1.0902823,14.68],[285.0,49.44417737,1.09028183,15.32],[286.0,49.44418801,1.09028137,15.14],[287.0,49.44419879,1.09028097,15.53],[288.0,49.44420963,1.09028048,14.63],[289.0,49.44422048,1.09028007,15.07],[290.0,49.44423158,1.09027975,14.92],[291.0,49.44424246,1.09027958,14.52],[292.0,49.4442533,1.09027902,14.79],[293.0,49.44426416,1.09027848,15.34],[294.0,49.44427517,1.09027812,14.86],[295.0,49.44428597,1.09027778,14.78],[296.0,49.4442969,1.09027744,15.26],[297.0,49.44430786,1.09027692,15.3],[298.0,49.44431871,1.09027662,15.3],[299.0,49.4443295,1.0902761,14.76],[300.0,49.44434046,1.09027556,14.98],[301.0,49.44435138,1.09027508,15.31],[302.0,49.44436222,1.09027431,14.8],[303.0,49.444373,1.09027399,14.78],[304.0,49.44438389,1.09027326,15.25],[305.0,49.44439479,1.09027302,15.47],[306.0,49.44440572,1.09027266,14.65],[307.0,49.44441645,1.09027222,14.22],[308.0,49.44442735,1.0902718,14.56],[309.0,49.44443835,1.09027162,14.7],[310.0,49.44444921,1.09027127,14.96],[311.0,49.44446016,1.09027095,15.18],[312.0,49.44446004,1.09026458,14.96],[313.0,49.44446017,1.09025838,14.79],[314.0,49.44445999,1.09025217,15.05],[315.0,49.44446001,1.09024603,14.71],[316.0,49.44445997,1.09023976,14.99],[317.0,49.44445985,1.09023336,14.81],[318.0,49.44445983,1.09022711,15.8],[319.0,49.4444595,1.090221,15.25],[320.0,49.44445942,1.09021463,14.75],[321.0,49.44445917,1.09020847,14.7],[322.0,49.44445916,1.09020226,14.87],[323.0,49.44445895,1.09019603,14.51],[324.0,49.44445882,1.09018995,14.78],[325.0,49.44445864,1.0901839,14.78],[326.0,49.44445856,1.09017753,15.27],[327.0,49.44445857,1.09017116,14.87],[328.0,49.44445847,1.09016492,14.76],[329.0,49.44445822,1.09015873,14.6],[330.0,49.44445815,1.0901525,14.65],[331.0,49.44445812,1.09014622,14.98],[332.0,49.44445813,1.09014035,14.94],[333.0,49.44445806,1.09013402,15.34],[334.0,49.44445794,1.09012798,14.81],[335.0,49.44445781,1.09012164,15.32],[336.0,49.44445773,1.0901154,15.08],[337.0,49.44445737,1.09010891,15.0],[338.0,49.4444573,1.09010287,14.4],[339.0,49.44445722,1.09009652,14.61],[340.0,49.44445707,1.09009029,15.22],[341.0,49.44445694,1.09008415,15.42],[342.0,49.4444568,1.09007784,15.06],[343.0,49.44445669,1.09007165,15.23],[344.0,49.44445659,1.09006536,14.88],[345.0,49.44445657,1.09005907,14.89],[346.0,49.4444563,1.09005254,14.8],[347.0,49.44445654,1.09004636,15.29],[348.0,49.44445645,1.09004024,15.1],[349.0,49.44445646,1.09003407,14.93],[350.0,49.44445632,1.09002774,14.9],[351.0,49.44445616,1.09002172,15.17],[352.0,49.44445605,1.09001556,15.1],[353.0,49.44445605,1.09000954,14.75],[354.0,49.44445599,1.09000326,15.51],[355.0,49.44445596,1.08999684,15.08],[356.0,49.4444558,1.08999046,15.0],[357.0,49.44445567,1.08998435,15.44],[358.0,49.44445551,1.08997799,15.31],[359.0,49.44445542,1.08997156,14.97],[360.0,49.44445528,1.08996527,15.16],[361.0,49.44445523,1.08995887,14.68],[362.0,49.44445519,1.08995262,14.81],[363.0,49.44445516,1.08994666,14.32],[364.0,49.44445485,1.08994026,15.37],[365.0,49.44445469,1.08993396,14.43],[366.0,49.44445443,1.0899276,15.2],[367.0,49.44445429,1.08992152,14.75],[368.0,49.44445423,1.08991534,14.71],[369.0,49.44445407,1.08990909,14.94],[370.0,49.4444539,1.08990283,15.08],[371.0,49.44445382,1.08989642,15.18],[372.0,49.44445394,1.08989051,15.53],[373.0,49.44445382,1.08988438,15.11],[374.0,49.44445391,1.08987812,15.26],[375.0,49.44445379,1.08987191,14.82],[376.0,49.44445363,1.08986559,15.21],[377.0,49.44445353,1.08985937,15.05],[378.0,49.44445339,1.08985311,14.86],[379.0,49.4444533,1.08984709,14.97],[380.0,49.44445314,1.08984078,14.98],[381.0,49.44445303,1.08983467,15.06],[382.0,49.44445294,1.08982835,15.12],[383.0,49.44445282,1.08982222,14.85],[384.0,49.4444527,1.08981619,14.78],[385.0,49.44445254,1.08980986,15.22],[386.0,49.44445226,1.08980382,14.49],[387.0,49.44445211,1.08979755,14.81],[388.0,49.4444521,1.08979127,15.47],[389.0,49.44445198,1.08978521,14.19],[390.0,49.44445189,1.08977896,14.79],[391.0,49.4444518,1.08977261,15.21],[392.0,49.44445158,1.08976626,14.5],[393.0,49.44445133,1.08976011,15.78],[394.0,49.4444513,1.08975365,14.22],[395.0,49.44445137,1.08974743,15.43],[396.0,49.44445111,1.08974117,15.47],[397.0,49.44445097,1.08973487,15.27],[398.0,49.44445097,1.08972853,14.93],[399.0,49.44445072,1.08972222,15.11],[400.0,49.44445063,1.0897162,14.73],[401.0,49.44445062,1.08970991,15.24],[402.0,49.44445052,1.08970383,14.66],[403.0,49.44445053,1.08969767,14.92],[404.0,49.44445044,1.08969149,15.3],[405.0,49.44445033,1.08968496,14.67],[406.0,49.44445027,1.08967877,14.89],[407.0,49.44445029,1.08967238,15.05],[408.0,49.44445008,1.08966617,14.6],[409.0,49.44444997,1.08965965,15.35],[410.0,49.44444987,1.08965361,15.1],[411.0,49.44444972,1.08964735,14.55],[412.0,49.44444961,1.0896412,14.99],[413.0,49.44444949,1.089635,14.77],[414.0,49.44444938,1.08962909,14.8],[415.0,49.44444923,1.08962282,15.02],[416.0,49.44444908,1.08961659,14.79],[417.0,49.44444898,1.0896103,15.29],[418.0,49.44444883,1.08960402,14.79],[419.0,49.44444864,1.08959773,15.29],[420.0,49.44444852,1.0895913,14.99],[421.0,49.4444484,1.0895851,15.26],[422.0,49.44444839,1.08957867,14.84],[423.0,49.44444836,1.08957261,14.85],[424.0,49.44444816,1.08956646,14.65],[425.0,49.4444481,1.0895602,15.17],[426.0,49.44444792,1.08955399,15.28],[427.0,49.44444794,1.08954792,15.64],[428.0,49.44444778,1.08954176,15.39],[429.0,49.44444765,1.0895357,15.07],[430.0,49.44444778,1.0895293,14.94],[431.0,49.44444764,1.08952313,15.12],[432.0,49.44444761,1.08951689,14.99],[433.0,49.44444749,1.08951084,15.44],[434.0,49.44444737,1.08950438,15.28],[435.0,49.44444727,1.08949813,14.75],[436.0,49.44444709,1.08949208,14.79],[437.0,49.44444705,1.0894858,15.41],[438.0,49.44444705,1.08947978,15.09],[439.0,49.44444705,1.0894735,14.93],[440.0,49.44444711,1.08946728,15.36],[441.0,49.44444695,1.08946092,14.88],[442.0,49.44444687,1.08945467,14.92],[443.0,49.44444678,1.08944835,14.86],[444.0,49.44444667,1.08944209,14.41],[445.0,49.44444644,1.08943589,15.26],[446.0,49.4444464,1.08942967,14.64],[447.0,49.44444625,1.08942332,14.83],[448.0,49.44444613,1.08941708,14.78],[449.0,49.44444591,1.08941088,15.22],[450.0,49.44444602,1.08940476,14.98],[451.0,49.44444585,1.08939882,15.0],[452.0,49.44444576,1.0893925,14.5],[453.0,49.44444576,1.08938641,14.97],[454.0,49.44444574,1.08937989,14.56],[455.0,49.44444573,1.08937361,15.09],[456.0,49.44444553,1.08936744,15.11],[457.0,49.44444542,1.08936126,14.99],[458.0,49.44444533,1.08935497,15.61],[459.0,49.44444512,1.0893487,15.16],[460.0,49.44444499,1.08934252,15.18],[461.0,49.44444488,1.08933634,15.04],[462.0,49.44444479,1.08933021,14.94],[463.0,49.44444465,1.08932379,15.29],[464.0,49.44444442,1.08931777,15.33],[465.0,49.44444423,1.08931158,14.61],[466.0,49.44444433,1.08930517,15.32],[467.0,49.44444406,1.08929885,15.15],[468.0,49.44444404,1.08929259,15.29],[469.0,49.44444388,1.08928654,15.14],[470.0,49.44444379,1.08928021,14.63],[471.0,49.44444371,1.08927399,14.65],[472.0,49.44444363,1.08926771,15.55],[473.0,49.44444353,1.0892614,15.08],[474.0,49.44444336,1.08925503,14.57],[475.0,49.44444331,1.08924885,15.1],[476.0,49.44444326,1.08924268,14.89],[477.0,49.44444323,1.08923651,14.45],[478.0,49.44444302,1.08923057,14.31],[479.0,49.44444297,1.08922426,14.52],[480.0,49.444443,1.08921836,15.08],[481.0,49.44444286,1.08921176,14.99],[482.0,49.44444275,1.08920566,14.93],[483.0,49.44444257,1.08919933,15.09],[484.0,49.4444425,1.08919324,15.18],[485.0,49.44444237,1.08918691,14.37],[486.0,49.44444239,1.08918042,14.91],[487.0,49.44444235,1.08917396,14.75],[488.0,49.44444219,1.08916772,14.63],[489.0,49.44444209,1.08916793,14.84],[490.0,49.44444196,1.08916766,14.96],[491.0,49.44444198,1.08916767,14.92],[492.0,49.44444199,1.08916783,14.56],[493.0,49.44444202,1.0891679,14.86],[494.0,49.44444198,1.089168,15.6],[495.0,49.44444197,1.08916814,14.68],[496.0,49.44444192,1.08916796,14.49],[497.0,49.44444196,1.08916789,15.08],[498.0,49.44444192,1.08916816,15.18],[499.0,49.44444185,1.08916819,15.14],[500.0,49.44444182,1.08916818,14.66],[501.0,49.44444204,1.08916811,15.3],[502.0,49.44444215,1.08916802,14.76],[503.0,49.44444209,1.08916815,14.66],[504.0,49.4444421,1.089168,14.82],[505.0,49.44444212,1.08916798,14.97],[506.0,49.44444194,1.08916806,15.21],[507.0,49.44444181,1.08916793,15.19],[508.0,49.44444175,1.08916812,14.99],[509.0,49.44445252,1.08916748,15.28],[510.0,49.44446323,1.08916705,15.02],[511.0,49.44447395,1.0891665,15.27],[512.0,49.44448474,1.0891659,14.58],[513.0,49.44449545,1.08916563,14.53],[514.0,49.44450619,1.08916521,15.23],[515.0,49.44451698,1.08916492,14.58],[516.0,49.44452782,1.08916454,14.91],[517.0,49.44453875,1.08916422,14.97],[518.0,49.44454942,1.08916379,14.85],[519.0,49.44456029,1.08916351,14.86],[520.0,49.4445711,1.08916312,15.42],[521.0,49.4445817,1.08916281,14.24],[522.0,49.44459262,1.08916235,15.27],[523.0,49.44460339,1.08916183,15.69],[524.0,49.4446141,1.0891614,15.01],[525.0,49.4446251,1.08916095,14.99],[526.0,49.4446359,1.0891607,15.22],[527.0,49.44464664,1.08916012,15.55],[528.0,49.44465742,1.08915967,14.64],[529.0,49.44466827,1.08915925,15.03],[530.0,49.44467908,1.08915894,14.94],[531.0,49.44468973,1.08915834,15.17],[532.0,49.44470041,1.08915786,15.05],[533.0,49.44471121,1.08915744,15.2],[534.0,49.44472217,1.08915703,14.87],[535.0,49.44473288,1.08915684,15.01],[536.0,null,null,14.8],[537.0,49.44475454,1.08915578,14.8],[538.0,49.44476524,1.08915551,14.96],[539.0,49.44477586,1.08915515,14.96],[540.0,49.44478666,1.08915459,14.65],[541.0,49.44479755,1.08915406,15.47],[542.0,49.44480843,1.08915366,14.96],[543.0,49.444819,1.08915337,14.58],[544.0,49.44482981,1.08915297,15.33],[545.0,49.44484066,1.08915258,14.78],[546.0,49.44485134,1.08915189,15.15],[547.0,49.4448623,1.08915171,14.99],[548.0,49.44487325,1.08915108,15.08],[549.0,49.44488402,1.08915093,15.05],[550.0,49.44489497,1.0891506,14.83],[551.0,49.44490577,1.0891502,15.01],[552.0,49.44491653,1.08914963,15.61],[553.0,49.4449273,1.08914934,14.33],[554.0,49.44493805,1.08914883,15.02],[555.0,49.44494877,1.08914839,15.13],[556.0,49.44495947,1.08914794,14.68],[557.0,49.4449704,1.08914754,14.59],[558.0,49.44498128,1.08914704,15.65],[559.0,49.44498106,1.08913042,14.89],[560.0,49.44498072,1.08911358,15.62],[561.0,49.44498036,1.08909704,15.16],[562.0,49.44498014,1.08908036,15.02],[563.0,49.44497983,1.08906354,15.14],[564.0,49.44497961,1.08904685,15.19],[565.0,49.44497941,1.08902994,15.35],[566.0,49.44497892,1.08901313,15.13],[567.0,49.44497853,1.08899646,15.04],[568.0,49.44497836,1.08897964,15.05],[569.0,49.44497801,1.08896295,15.41],[570.0,49.44497789,1.08894623,15.25],[571.0,49.4449776,1.08892946,14.7],[572.0,49.44497748,1.088913,14.81],[573.0,49.44497726,1.08889644,15.1],[574.0,49.44497697,1.08887965,14.81],[575.0,49.44497668,1.08886284,14.89],[576.0,49.44497633,1.08884617,14.71],[577.0,49.444976,1.08882943,14.92],[578.0,49.44497576,1.08881292,15.13],[579.0,49.44497548,1.08879625,15.3],[580.0,49.44497527,1.08877941,15.0],[581.0,49.44497499,1.08876269,15.62],[582.0,49.44497465,1.08874577,14.98],[583.0,49.44497428,1.08872913,15.96],[584.0,49.44497407,1.08871231,15.3],[585.0,49.44497382,1.08869552,15.15],[586.0,49.44497353,1.08867884,14.85],[587.0,49.44497319,1.08866189,14.15],[588.0,49.44497271,1.08864537,14.95],[589.0,49.44497249,1.08862859,15.05],[590.0,49.44497217,1.08861185,15.58],[591.0,49.44497192,1.08859523,14.59],[592.0,49.44497155,1.08857845,15.57],[593.0,49.4449712,1.0885618,14.92],[594.0,49.444971,1.08854509,15.22],[595.0,49.44497089,1.08852846,14.24],[596.0,49.44497068,1.08851172,15.04],[597.0,49.44497053,1.08849506,14.9],[598.0,49.44497017,1.08847847,15.2],[599.0,49.44497,1.08846183,15.03],[600.0,49.44496974,1.0884449,14.66],[601.0,49.44496946,1.08842818,15.28],[602.0,49.44496909,1.08841121,15.21],[603.0,49.44496895,1.08839459,15.18],[604.0,49.44496863,1.088378,15.3],[605.0,49.44496829,1.08836127,15.33],[606.0,49.44496801,1.08834461,14.99],[607.0,49.4449679,1.08832796,14.59],[608.0,49.44496746,1.08831124,14.58],[609.0,49.44496713,1.08829443,15.4],[610.0,49.44496695,1.08827763,15.21],[611.0,49.44496655,1.08826089,15.03],[612.0,49.44496638,1.08824439,14.87],[613.0,49.44496608,1.08822754,15.01],[614.0,49.44496585,1.08821086,15.01],[615.0,49.44496567,1.08819417,14.9],[616.0,49.44496546,1.0881776,14.79],[617.0,49.44496525,1.08816116,15.65],[618.0,49.44496491,1.08814412,15.07],[619.0,49.44496464,1.08812739,14.82],[620.0,49.44496428,1.08811081,14.61],[621.0,49.44496403,1.08809399,14.78],[622.0,49.44496388,1.08807749,15.22],[623.0,49.44496363,1.08806077,15.23],[624.0,49.4449631,1.08804412,14.93]],"truth":[[49.4429,1.0884],[49.44291937,1.08957189],[49.44345877,1.08955093],[49.44378594,1.090297],[49.44446019,1.0902708],[49.44444196,1.08916781],[49.44498136,1.08914684],[49.44496312,1.08804383]]},"rtk_float":{"start":"2026-10-30T09:00:00+00:00","points":[[0.0,49.44290026,1.08839944,15.04],[1.0,49.44290016,1.08841589,14.53],[2.0,49.44289948,1.08843148,15.16],[3.0,49.44290206,1.08844933,14.88],[4.0,49.44290025,1.0884662,15.58],[5.0,49.44290168,1.08848254,14.68],[6.0,49.44290072,1.08849905,14.33],[7.0,49.44290123,1.0885184,15.02],[8.0,49.44290146,1.08853077,14.9],[9.0,49.44290013,1.08854384,14.88],[10.0,49.4428992,1.08855916,14.36],[11.0,49.44290155,1.08857456,15.13],[12.0,49.44290175,1.0885916,15.5],[13.0,49.442901,1.08860602,14.43],[14.0,49.44290113,1.0886228,15.35],[15.0,49.44290252,1.08863752,14.83],[16.0,49.44290143,1.08865473,15.7],[17.0,49.44290152,1.08867511,15.13],[18.0,49.44290336,1.08869155,14.94],[19.0,49.44290269,1.08870898,15.33],[20.0,49.44290398,1.08872643,15.16],[21.0,49.44290397,1.08874424,14.82],[22.0,49.44290272,1.08876143,15.21],[23.0,49.44290349,1.08878201,14.85],[24.0,49.44290634,1.08879674,14.46],[25.0,49.44290589,1.08881527,15.61],[26.0,49.44290647,1.08883314,14.9],[27.0,49.44290745,1.08884993,14.82],[28.0,49.44290843,1.0888671,15.1],[29.0,49.44290821,1.08888588,14.53],[30.0,49.44290728,1.08890224,14.59],[31.0,49.44290646,1.08891926,14.85],[32.0,49.44290693,1.08893578,14.84],[33.0,49.44290845,1.08895415,15.02],[34.0,49.44290807,1.08896915,15.34],[35.0,49.44290592,1.08898644,14.86],[36.0,49.44290782,1.08900283,15.15],[37.0,49.44290887,1.08902221,15.18],[38.0,49.44290843,1.08903715,14.67],[39.0,49.44291037,1.08905194,15.07],[40.0,49.44291154,1.08906813,14.72],[41.0,49.44291074,1.08908537,15.32],[42.0,49.44290963,1.08910431,15.14],[43.0,49.44290976,1.08911904,15.0],[44.0,49.44291107,1.08913954,14.6],[45.0,49.44291282,1.08915547,15.03],[46.0,49.44291358,1.08917237,14.77],[47.0,49.44291558,1.08918836,15.21],[48.0,null,null,14.96],[49.0,49.44291304,1.08921579,14.76],[50.0,49.44291145,1.08923272,15.28],[51.0,49.442916,1.08925009,15.22],[52.0,49.44291429,1.08926522,14.82],[53.0,49.44291528,1.08928317,15.35],[54.0,49.44291581,1.08930134,14.91],[55.0,49.4429168,1.08931693,14.91],[56.0,49.44291562,1.08933376,15.04],[57.0,49.44291501,1.08935001,14.77],[58.0,49.44291382,1.0893685,14.87],[59.0,49.44291532,1.08938771,14.95],[60.0,49.44291488,1.08940397,15.46],[61.0,49.4429129,1.08942133,15.45],[62.0,49.44291371,1.08943416,14.92],[63.0,49.44291538,1.08944958,15.48],[64.0,49.44291644,1.08946238,14.99],[65.0,49.44291837,1.0894794,15.11],[66.0,49.4429174,1.08949694,15.27],[67.0,49.44291764,1.08951437,15.09],[68.0,49.44291858,1.08953298,15.72],[69.0,49.4429176,1.08955076,15.07],[70.0,49.44291792,1.08957098,14.64],[71.0,49.44291637,1.08957011,15.39],[72.0,49.44291556,1.08956922,14.88],[73.0,49.44291527,1.08957035,14.91],[74.0,49.44291662,1.08957441,14.1],[75.0,49.44291621,1.08957339,15.3],[76.0,49.44291635,1.08957094,15.25],[77.0,49.44291655,1.08957017,15.24],[78.0,49.44291552,1.08956678,15.29],[79.0,49.44291448,1.08957218,15.51],[80.0,49.44291641,1.08957181,14.99],[81.0,49.4429149,1.08957294,15.28],[82.0,null,null,14.78],[83.0,49.44291625,1.08956926,14.89],[84.0,49.44291678,1.08956824,15.32],[85.0,49.44291637,1.08956913,15.12],[86.0,49.44291656,1.08956642,14.6],[87.0,49.44291663,1.08956575,15.11],[88.0,49.44291636,1.08956909,14.95],[89.0,49.44291553,1.08957044,14.75],[90.0,49.44291502,1.08956952,15.13],[91.0,49.44291534,1.08957087,14.88],[92.0,49.44318398,1.08961442,14.53],[93.0,49.44291631,1.08957155,14.67],[94.0,49.44291677,1.08957326,15.53],[95.0,49.44291735,1.08957005,14.55],[96.0,null,null,15.07],[97.0,49.44291956,1.08957224,15.18],[98.0,49.44291982,1.08957421,15.19],[99.0,49.44292178,1.08957194,14.63],[100.0,49.44292288,1.08956996,14.9],[101.0,49.44293448,1.0895702,15.04],[102.0,49.44294606,1.08957455,15.24],[103.0,49.44295458,1.08957205,14.81],[104.0,49.44296351,1.08957435,14.65],[105.0,49.44297647,1.08957069,15.3],[106.0,49.44298399,1.08956796,15.33],[107.0,49.44299396,1.08956943,15.11],[108.0,49.4430054,1.08956765,14.82],[109.0,49.44301483,1.08956574,15.12],[110.0,49.44302459,1.08956696,15.03],[111.0,49.44303689,1.08956211,15.25],[112.0,49.44304809,1.08956136,14.63],[113.0,49.4430572,1.08955956,15.03],[114.0,49.4430674,1.08955933,14.95],[115.0,49.44307694,1.08955996,14.67],[116.0,49.44308927,1.08955929,15.06],[117.0,49.44309874,1.08956328,15.01],[118.0,49.44311123,1.08956569,14.88],[119.0,49.44311931,1.08956531,15.12],[120.0,49.44313023,1.089563,14.57],[121.0,49.44314225,1.08956345,14.98],[122.0,49.44315509,1.08956242,15.13],[123.0,49.44316274,1.08956021,15.09],[124.0,49.44317186,1.08955993,15.32],[125.0,49.44318279,1.08955456,14.64],[126.0,49.44319462,1.08955634,14.55],[127.0,49.44320452,1.08955301,15.07],[128.0,49.44321572,1.08955667,15.14],[129.0,49.44322787,1.08955747,15.64],[130.0,49.44323933,1.08955807,15.18],[131.0,49.44325068,1.08955574,14.74],[132.0,49.44326188,1.08955758,15.24],[133.0,49.44327436,1.0895531,14.75],[134.0,49.44328582,1.08955252,14.55],[135.0,49.44329393,1.08955299,15.78],[136.0,49.44330748,1.0895558,15.1],[137.0,49.44331958,1.089554,15.21],[138.0,49.4433267,1.08955354,15.17],[139.0,49.44333801,1.08955517,15.54],[140.0,49.44334703,1.08955394,15.09],[141.0,49.4433592,1.08955157,15.37],[142.0,49.44337066,1.08955776,14.69],[143.0,49.44338294,1.08955541,14.58],[144.0,49.44339225,1.0895549,15.43],[145.0,49.44340522,1.08954895,15.44],[146.0,49.44341812,1.08955243,15.15],[147.0,49.44342926,1.0895534,15.07],[148.0,49.44343882,1.08955338,15.05],[149.0,49.44345002,1.08955124,14.79],[150.0,49.44346034,1.08955253,15.46],[151.0,49.44346579,1.08956686,15.2],[152.0,49.44347364,1.08957759,15.15],[153.0,49.44347976,1.08959262,15.11],[154.0,49.44348326,1.08960725,15.31],[155.0,49.44349154,1.08961987,15.15],[156.0,49.44349735,1.08963361,15.22],[157.0,49.44350205,1.08964714,14.65],[158.0,49.44350757,1.08965989,15.15],[159.0,49.44351543,1.08967191,15.66],[160.0,49.44352139,1.08968367,14.84],[161.0,49.44352599,1.08970177,14.96],[162.0,49.44353377,1.08971302,15.27],[163.0,49.44353816,1.08972754,15.29],[164.0,49.44354617,1.08974338,15.19],[165.0,49.44355309,1.08975509,14.51],[166.0,49.44355821,1.08976808,15.15],[167.0,49.44356224,1.08977925,14.64],[168.0,49.44356769,1.08979706,14.75],[169.0,49.44357495,1.08981424,15.16],[170.0,49.44358162,1.08982656,14.91],[171.0,49.44358794,1.08984462,15.24],[172.0,49.44359174,1.08985622,15.94],[173.0,49.44359955,1.08986964,15.23],[174.0,49.44360554,1.08988489,15.22],[175.0,49.44361055,1.08989914,14.73],[176.0,49.44361638,1.08991407,14.81],[177.0,49.44362265,1.08992652,14.68],[178.0,49.44362861,1.08993861,14.84],[179.0,49.44363513,1.08995381,14.67],[180.0,49.44364255,1.08996745,14.8],[181.0,49.44364953,1.08998298,14.94],[182.0,49.44365428,1.08999315,14.7],[183.0,49.44365883,1.09000359,14.57],[184.0,49.4436651,1.09001951,14.59],[185.0,49.44366963,1.0900323,15.14],[186.0,49.44367546,1.09004578,15.02],[187.0,49.44368478,1.09005972,15.31],[188.0,49.44368872,1.09007514,15.31],[189.0,49.44369502,1.09008612,14.9],[190.0,49.44369958,1.09010097,15.2],[191.0,49.44370423,1.09011462,14.57],[192.0,49.44371155,1.09013142,15.68],[193.0,49.44371788,1.09014742,15.36],[194.0,49.44372295,1.09016044,14.94],[195.0,49.44372975,1.09017379,14.65],[196.0,49.44373422,1.09018511,15.11],[197.0,49.44374005,1.0902018,14.44],[198.0,49.44374739,1.09021667,14.77],[199.0,49.44375244,1.09022666,15.22],[200.0,49.44376093,1.09023989,15.02],[201.0,49.44376662,1.09025471,14.85],[202.0,49.44377286,1.09026663,15.29],[203.0,null,null,14.69],[204.0,49.44378292,1.09029466,15.09],[205.0,49.44378346,1.09029544,14.85],[206.0,49.44378449,1.0903022,14.75],[207.0,49.44378374,1.09030054,15.14],[208.0,49.44378244,1.09030269,14.7],[209.0,49.44359024,1.09001544,15.57],[210.0,49.44378152,1.09030506,14.82],[211.0,49.44378273,1.09030384,15.6],[212.0,49.44378512,1.09029959,14.67],[213.0,49.44378274,1.09030058,15.18],[214.0,49.44378309,1.09030025,14.64],[215.0,49.4437818,1.09029975,14.6],[216.0,null,null,15.05],[217.0,49.44378086,1.09029611,15.2],[218.0,49.44378155,1.09029798,14.62],[219.0,49.4437829,1.09029281,15.36],[220.0,49.44378205,1.09029285,14.76],[221.0,49.44378292,1.09029295,15.04],[222.0,49.44378124,1.09029645,15.11],[223.0,49.44378163,1.09029923,15.18],[224.0,49.44378299,1.09029587,14.46],[225.0,49.44378455,1.0902968,15.49],[226.0,49.44378261,1.09029637,15.17],[227.0,49.44378357,1.09029541,14.87],[228.0,49.44378256,1.09029779,14.69],[229.0,49.44378049,1.09029757,14.49],[230.0,null,null,14.59],[231.0,49.44378041,1.09029634,15.16],[232.0,49.44377871,1.09029841,14.9],[233.0,49.4437796,1.09029539,14.66],[234.0,49.44377926,1.09029327,14.84],[235.0,49.44378037,1.09029309,15.47],[236.0,49.44377999,1.09029423,14.9],[237.0,49.44377895,1.09029625,14.82],[238.0,49.44377713,1.09029571,15.41],[239.0,49.44377788,1.09029782,15.14],[240.0,49.44377898,1.0902975,15.01],[241.0,49.44377987,1.09029761,14.82],[242.0,49.44377909,1.09030039,14.53],[243.0,49.44377893,1.09029724,14.65],[244.0,49.44377963,1.09029472,14.86],[245.0,49.44377955,1.09029683,14.93],[246.0,49.44377875,1.09029439,15.11],[247.0,49.44377743,1.0902981,15.17],[248.0,49.44377672,1.0902981,15.07],[249.0,49.44377609,1.09030002,15.07],[250.0,49.44378698,1.09029798,14.7],[251.0,49.4438002,1.09029792,14.35],[252.0,49.44380948,1.09029806,14.84],[253.0,49.44382043,1.09029701,14.71],[254.0,49.4438313,1.09029509,14.8],[255.0,49.44384422,1.09029509,14.92],[256.0,49.44385645,1.09029128,14.63],[257.0,49.44386786,1.09029183,14.67],[258.0,49.44387944,1.09029656,14.97],[259.0,49.44389041,1.09029144,15.03],[260.0,49.44390116,1.09029199,14.8],[261.0,49.44391144,1.09029206,15.15],[262.0,49.44392306,1.09029176,14.93],[263.0,49.44393298,1.09029212,14.69],[264.0,49.44394458,1.0902908,15.01],[265.0,49.44395395,1.09028851,15.56],[266.0,49.44396601,1.09028948,14.8],[267.0,49.44397785,1.09028563,15.35],[268.0,49.44398817,1.09028332,15.41],[269.0,49.44399622,1.09028304,15.45],[270.0,49.44400804,1.09028365,14.75],[271.0,null,null,15.6],[272.0,49.44402964,1.09028323,15.03],[273.0,49.4440411,1.09028118,14.92],[274.0,49.44404994,1.09028432,14.93],[275.0,49.44406261,1.09028394,15.18],[276.0,49.44407365,1.09028321,15.02],[277.0,49.44408318,1.0902832,14.95],[278.0,49.44409502,1.09028396,15.39],[279.0,49.44410755,1.09028461,14.78],[280.0,49.44411807,1.09028296,14.69],[281.0,49.44413012,1.09028199,15.24],[282.0,49.44413955,1.09028406,15.21],[283.0,49.44415301,1.09028631,15.33],[284.0,49.44416247,1.09028358,14.68],[285.0,49.44417643,1.09028244,15.32],[286.0,49.44418371,1.09028139,15.14],[287.0,49.44419329,1.09028132,15.53],[288.0,49.4442036,1.09027987,14.63],[289.0,49.44421413,1.09027973,15.07],[290.0,49.44422839,1.09028076,14.92],[291.0,49.44423935,1.09028417,14.52],[292.0,49.44424967,1.0902816,14.79],[293.0,49.44426035,1.0902795,15.34],[294.0,49.44427325,1.09028003,14.86],[295.0,49.4442829,1.09028076,14.78],[296.0,49.44429469,1.09028156,15.26],[297.0,49.44430674,1.09027975,15.3],[298.0,49.44431733,1.0902812,15.3],[299.0,49.44432695,1.09027926,14.76],[300.0,49.44433899,1.09027713,14.98],[301.0,49.44435062,1.09027582,15.31],[302.0,49.44436097,1.09027024,14.8],[303.0,49.44437032,1.09027122,14.78],[304.0,49.44438155,1.0902662,15.25],[305.0,49.44439279,1.09026852,15.47],[306.0,49.44440438,1.09026913,14.65],[307.0,49.44441314,1.09026835,14.22],[308.0,49.44442439,1.09026806,14.56],[309.0,49.4444371,1.0902712,14.7],[310.0,49.44444776,1.09027182,14.96],[311.0,49.44445974,1.09027306,15.18],[312.0,49.44445939,1.09026477,14.96],[313.0,49.44446282,1.09025898,14.79],[314.0,49.44446163,1.09025306,15.05],[315.0,49.44446333,1.09024811,14.71],[316.0,49.44446421,1.09024141,14.99],[317.0,49.44446377,1.09023258,14.81],[318.0,49.44446488,1.09022606,15.8],[319.0,49.4444615,1.09022175,15.25],[320.0,49.4444617,1.0902134,14.75],[321.0,49.44445936,1.0902083,14.7],[322.0,49.44446068,1.09020238,14.87],[323.0,49.44445889,1.0901961,14.51],[324.0,49.44445845,1.09019215,14.78],[325.0,49.44445719,1.09018866,14.78],[326.0,49.44445736,1.09018042,15.27],[327.0,49.44445907,1.09017198,14.87],[328.0,49.44445901,1.09016566,14.76],[329.0,49.44445667,1.0901601,14.6],[330.0,49.444457,1.09015389,14.65],[331.0,49.44445807,1.09014688,14.98],[332.0,49.44445964,1.09014614,14.94],[333.0,49.44446001,1.09013839,15.34],[334.0,49.44445963,1.0901351,14.81],[335.0,49.44445921,1.09012718,15.32],[336.0,49.4444594,1.09012077,15.08],[337.0,49.44445545,1.09011075,15.0],[338.0,49.44445586,1.09010729,14.4],[339.0,49.44445612,1.09009928,14.61],[340.0,49.44445527,1.09009307,15.22],[341.0,49.44445472,1.09008836,15.42],[342.0,49.44445406,1.09008087,15.06],[343.0,49.44445387,1.0900753,15.23],[344.0,49.44445379,1.09006812,14.88],[345.0,49.44445494,1.09006099,14.89],[346.0,49.44445231,1.09005031,14.8],[347.0,49.44445732,1.09004482,15.29],[348.0,49.44445754,1.0900403,15.1],[349.0,49.44445912,1.0900351,14.93],[350.0,49.44445837,1.0900273,14.9],[351.0,49.44445743,1.09002424,15.17],[352.0,49.44445726,1.09001917,15.1],[353.0,49.44445867,1.09001602,14.75],[354.0,49.44445917,1.09000904,15.51],[355.0,49.44446024,1.09,15.08],[356.0,49.44445927,1.0899916,15.0],[357.0,49.44445877,1.0899872,15.44],[358.0,49.44445778,1.08997901,15.31],[359.0,49.44445787,1.08996976,14.97],[360.0,49.44445723,1.08996275,15.16],[361.0,49.44445786,1.08995398,14.68],[362.0,49.44445871,1.08994749,14.81],[363.0,49.4444597,1.08994526,14.32],[364.0,49.44445649,1.08993651,15.37],[365.0,49.44445564,1.08992928,14.43],[366.0,49.44445318,1.08992107,15.2],[367.0,49.44445253,1.08991713,14.75],[368.0,49.44445304,1.08991163,14.71],[369.0,49.44445212,1.08990511,14.94],[370.0,49.44445095,1.08989849,15.08],[371.0,49.44445118,1.08988968,15.18],[372.0,49.44445447,1.08988817,15.53],[373.0,49.44445414,1.08988353,15.11],[374.0,49.44445688,1.08987687,15.26],[375.0,49.44445645,1.08987091,14.82],[376.0,49.44445551,1.08986336,15.21],[377.0,49.44445543,1.08985725,15.05],[378.0,49.44445478,1.08985063,14.86],[379.0,49.44445498,1.08984767,14.97],[380.0,49.44445397,1.0898402,14.98],[381.0,49.44445368,1.08983571,15.06],[382.0,49.44445377,1.08982827,15.12],[383.0,49.44445351,1.08982346,14.85],[384.0,49.44445305,1.08982037,14.78],[385.0,49.44445212,1.08981254,15.22],[386.0,49.44444945,1.08980921,14.49],[387.0,49.44444864,1.08980239,14.81],[388.0,49.44444986,1.08979552,15.47],[389.0,49.44444947,1.08979188,14.19],[390.0,49.44444964,1.08978528,14.79],[391.0,49.44444976,1.08977732,15.21],[392.0,49.44444778,1.08976926,14.5],[393.0,49.44444551,1.08976436,15.78],[394.0,49.44444659,1.08975456,14.22],[395.0,49.44444899,1.08974858,15.43],[396.0,49.44444664,1.0897419,15.47],[397.0,49.44444591,1.08973459,15.27],[398.0,49.44444733,1.08972687,14.93],[399.0,49.44444509,1.08971943,15.11],[400.0,49.44444506,1.0897163,14.73],[401.0,49.44444636,1.08970929,15.24],[402.0,49.44444644,1.08970528,14.66],[403.0,49.44444794,1.08970018,14.92],[404.0,49.44444809,1.08969468,15.3],[405.0,49.44444781,1.08968392,14.67],[406.0,49.44444842,1.0896783,14.89],[407.0,49.44445019,1.08966969,15.05],[408.0,49.44444843,1.08966383,14.6],[409.0,49.44444821,1.08965324,15.35],[410.0,49.4444481,1.08964985,15.1],[411.0,49.44444741,1.08964321,14.55],[412.0,49.4444471,1.08963832,14.99],[413.0,49.44444684,1.08963245,14.77],[414.0,49.44444654,1.08963103,14.8],[415.0,49.44444572,1.08962433,15.02],[416.0,49.44444495,1.08961801,14.79],[417.0,49.4444449,1.08961097,15.29],[418.0,49.44444404,1.08960393,14.79],[419.0,49.44444267,1.08959684,15.29],[420.0,49.44444237,1.08958776,14.99],[421.0,49.44444197,1.089582,15.26],[422.0,49.44444322,1.08957267,14.84],[423.0,49.4444442,1.08956901,14.85],[424.0,49.44444272,1.0895641,14.65],[425.0,49.44444323,1.08955746,15.17],[426.0,49.4444419,1.08955157,15.28],[427.0,49.44444366,1.08954764,15.64],[428.0,49.44444279,1.08954252,15.39],[429.0,49.44444223,1.08953889,15.07],[430.0,49.44444569,1.08953014,14.94],[431.0,49.44444501,1.08952487,15.12],[432.0,49.44444603,1.08951851,14.99],[433.0,49.44444557,1.08951489,15.44],[434.0,49.44444523,1.08950523,15.28],[435.0,49.44444515,1.08949877,14.75],[436.0,49.44444397,1.08949531,14.79],[437.0,49.44444475,1.08948832,15.41],[438.0,49.44444628,1.08948531,15.09],[439.0,49.4444476,1.08947828,14.93],[440.0,49.44445,1.08947225,15.36],[441.0,49.44444904,1.08946405,14.88],[442.0,49.44444924,1.08945764,14.92],[443.0,49.44444932,1.08945005,14.86],[444.0,49.44444911,1.08944335,14.41],[445.0,49.44444722,1.08943756,15.26],[446.0,49.44444801,1.08943158,14.64],[447.0,49.44444722,1.08942349,14.83],[448.0,49.44444688,1.08941718,14.78],[449.0,49.44444491,1.08941142,15.22],[450.0,49.44444811,1.08940683,14.98],[451.0,49.44444702,1.08940505,15.0],[452.0,49.44444709,1.08939745,14.5],[453.0,49.44444854,1.08939338,14.97],[454.0,49.44444964,1.08938273,14.56],[455.0,49.44445097,1.08937576,15.09],[456.0,49.44444931,1.08937055,15.11],[457.0,49.4444492,1.08936507,14.99],[458.0,49.44444918,1.08935801,15.61],[459.0,49.4444475,1.08935121,15.16],[460.0,49.44444701,1.08934564,15.18],[461.0,49.44444678,1.08934026,15.04],[462.0,49.44444692,1.08933555,14.94],[463.0,49.44444622,1.08932653,15.29],[464.0,49.44444418,1.08932345,15.33],[465.0,49.44444291,1.08931784,14.61],[466.0,49.44444582,1.08930887,15.32],[467.0,49.44444312,1.08930136,15.15],[468.0,49.44444428,1.08929464,15.29],[469.0,49.44444335,1.08929119,15.14],[470.0,49.44444343,1.08928353,14.63],[471.0,49.44444374,1.08927733,14.65],[472.0,49.44444389,1.08927049,15.55],[473.0,49.44444383,1.08926308,15.08],[474.0,49.4444427,1.08925473,14.57],[475.0,49.44444344,1.08924932,15.1],[476.0,49.44444415,1.089244,14.89],[477.0,49.44444518,1.08923858,14.45],[478.0,49.44444338,1.08923685,14.31],[479.0,49.44444406,1.08922933,14.52],[480.0,49.44444607,1.0892281,15.08],[481.0,49.44444543,1.08921639,14.99],[482.0,49.44444511,1.08921208,14.93],[483.0,49.44444392,1.08920434,15.09],[484.0,49.44444429,1.08920033,15.18],[485.0,49.44444374,1.08919253,14.37],[486.0,49.44444553,1.08918251,14.91],[487.0,49.44444635,1.08917283,14.75],[488.0,49.44444543,1.08916651,14.63],[489.0,49.44444396,1.08916965,14.84],[490.0,49.44444192,1.08916557,14.96],[491.0,49.44444232,1.08916576,14.92],[492.0,49.44444241,1.08916805,14.56],[493.0,49.44444287,1.08916922,14.86],[494.0,49.44444219,1.08917069,15.6],[495.0,49.44444208,1.08917282,14.68],[496.0,49.44444132,1.08917007,14.49],[497.0,49.44444189,1.08916908,15.08],[498.0,49.44444141,1.08917305,15.18],[499.0,49.4444403,1.08917345,15.14],[500.0,49.44443991,1.08917342,14.66],[501.0,49.44444309,1.08917237,15.3],[502.0,49.4444448,1.08917094,14.76],[503.0,49.44444396,1.08917286,14.66],[504.0,49.4444441,1.08917067,14.82],[505.0,49.44444433,1.08917036,14.97],[506.0,49.44444158,1.08917158,15.21],[507.0,49.4444397,1.08916961,15.19],[508.0,49.44443884,1.08917252,14.99],[509.0,49.44444935,1.08916877,15.28],[510.0,49.4444589,1.08916818,15.02],[511.0,49.44446869,1.08916576,15.27],[512.0,49.44447951,1.08916273,14.58],[513.0,49.44448911,1.08916456,14.53],[514.0,49.44449925,1.08916407,15.23],[515.0,49.44451006,1.08916554,14.58],[516.0,49.44452161,1.08916581,14.91],[517.0,49.44453449,1.08916686,14.97],[518.0,49.44454358,1.08916621,14.85],[519.0,49.44455561,1.08916796,14.86],[520.0,49.44456673,1.08916792,15.42],[521.0,49.44457462,1.08916919,14.24],[522.0,49.44458744,1.08916806,15.27],[523.0,49.44459802,1.08916612,15.69],[524.0,49.44460758,1.08916568,15.01],[525.0,49.4446216,1.0891648,14.99],[526.0,49.4446325,1.08916689,15.22],[527.0,49.44464265,1.08916406,15.55],[528.0,49.44465322,1.08916321,14.64],[529.0,49.44466504,1.0891627,15.03],[530.0,49.44467613,1.08916389,14.94],[531.0,49.44468485,1.08916079,15.17],[532.0,49.44469392,1.08915949,15.05],[533.0,49.44470497,1.08915901,15.2],[534.0,49.44471829,1.08915883,14.87],[535.0,49.44472794,1.08916184,15.01],[536.0,null,null,14.8],[537.0,49.44475084,1.08915767,14.8],[538.0,49.44476031,1.0891594,14.96],[539.0,49.44476855,1.08915992,14.96],[540.0,49.44477946,1.08915738,14.65],[541.0,49.44479182,1.08915531,15.47],[542.0,49.44480402,1.08915516,14.96],[543.0,49.44481146,1.08915678,14.58],[544.0,49.44482254,1.0891566,15.33],[545.0,49.44483437,1.0891566,14.78],[546.0,49.44484344,1.08915208,15.15],[547.0,49.44485681,1.08915531,14.99],[548.0,49.44487001,1.08915171,15.08],[549.0,49.44488061,1.08915532,15.05],[550.0,49.44489385,1.08915626,14.83],[551.0,49.44490472,1.08915608,15.01],[552.0,49.44491523,1.08915349,15.61],[553.0,49.44492575,1.089155,14.33],[554.0,49.44493584,1.08915325,15.02],[555.0,49.44494572,1.0891525,15.13],[556.0,49.44495509,1.08915162,14.68],[557.0,49.44496807,1.08915146,14.59],[558.0,49.44498019,1.08914981,15.65],[559.0,49.44498081,1.08913459,14.89],[560.0,49.4449796,1.08911589,15.62],[561.0,49.44497804,1.08910182,15.16],[562.0,49.44497856,1.08908549,15.02],[563.0,49.44497784,1.08906723,15.14],[564.0,49.44497836,1.08905077,15.19],[565.0,49.44497925,1.08903119,15.35],[566.0,49.44497577,1.08901295,15.13],[567.0,49.44497371,1.08899683,15.04],[568.0,49.44497509,1.08897858,15.05],[569.0,49.44497369,1.08896223,15.41],[570.0,49.44497585,1.08894539,15.25],[571.0,49.44497525,1.08892782,14.7],[572.0,49.44497734,1.08891487,14.81],[573.0,49.44497794,1.08890037,15.1],[574.0,49.44497753,1.08888251,14.81],[575.0,49.44497699,1.08886434,14.89],[576.0,49.44497557,1.08884823,14.71],[577.0,49.44497457,1.08883111,14.92],[578.0,49.44497471,1.08881752,15.13],[579.0,49.4449745,1.08880133,15.3],[580.0,49.44497513,1.08878272,15.0],[581.0,49.44497478,1.08876598,15.62],[582.0,49.44497361,1.08874607,14.98],[583.0,49.44497195,1.08873041,15.96],[584.0,49.44497261,1.08871221,15.3],[585.0,49.44497277,1.0886943,15.15],[586.0,49.44497233,1.08867809,14.85],[587.0,49.44497109,1.0886577,14.15],[588.0,49.44496771,1.08864399,14.95],[589.0,49.44496821,1.08862617,15.05],[590.0,49.44496727,1.08860913,15.58],[591.0,49.4449675,1.08859377,14.59],[592.0,49.44496582,1.08857607,15.57],[593.0,49.44496442,1.08856018,14.92],[594.0,49.44496524,1.08854348,15.22],[595.0,49.44496742,1.08852805,14.24],[596.0,49.44496823,1.088511,15.04],[597.0,49.44496976,1.08849495,14.9],[598.0,49.44496822,1.08848007,15.2],[599.0,49.44496961,1.08846449,15.03],[600.0,49.44496965,1.08844458,14.66],[601.0,49.44496924,1.08842767,15.28],[602.0,49.44496757,1.08840716,15.21],[603.0,49.44496927,1.08839174,15.18],[604.0,49.44496841,1.08837689,15.3],[605.0,49.44496723,1.08835995,15.33],[606.0,49.44496679,1.08834397,14.99],[607.0,49.44496904,1.08832825,14.59],[608.0,49.44496633,1.08831144,14.58],[609.0,49.4449653,1.08829324,15.4],[610.0,49.44496639,1.08827514,15.21],[611.0,49.44496427,1.08825799,15.03],[612.0,49.44496567,1.08824449,14.87],[613.0,49.44496492,1.08822577,15.01],[614.0,49.44496538,1.08820951,15.01],[615.0,49.44496653,1.0881932,14.9],[616.0,49.4449673,1.08817854,14.79],[617.0,49.44496796,1.08816596,15.65],[618.0,49.44496682,1.0881443,15.07],[619.0,49.44496652,1.08812729,14.82],[620.0,49.44496504,1.0881126,14.61],[621.0,49.44496522,1.08809433,14.78],[622.0,49.44496686,1.0880807,15.22],[623.0,49.44496691,1.08806382,15.23],[624.0,49.44496281,1.08804815,14.93]],"truth":[[49.4429,1.0884],[49.44291937,1.08957189],[49.44345877,1.08955093],[49.44378594,1.090297],[49.44446019,1.0902708],[49.44444196,1.08916781],[49.44498136,1.08914684],[49.44496312,1.08804383]]},"phone":{"start":"2026-10-30T09:00:00+00:00","points":[[0.0,49.44290256,1.08839436,15.04],[1.0,49.4428991,1.08840822,14.53],[2.0,49.44288979,1.08841341,15.16],[3.0,49.44291309,1.08844128,14.88],[4.0,49.44289252,1.08845935,15.58],[5.0,49.4429043,1.08847209,14.68],[6.0,49.44289223,1.0884865,14.33],[7.0,49.44289481,1.08852929,15.02],[8.0,49.44289469,1.0885023,14.9],[9.0,49.44287888,1.08848238,14.88],[10.0,49.4428671,1.08848493,14.36],[11.0,49.44288812,1.08848825,15.13],[12.0,49.44288756,1.08850795,15.5],[13.0,49.44287761,1.08850147,14.43],[14.0,49.44287641,1.08851861,15.35],[15.0,49.44288782,1.08851508,14.83],[16.0,49.44287443,1.08853651,15.7],[17.0,49.44287286,1.08858967,15.13],[18.0,49.44288878,1.08860336,14.94],[19.0,49.44287958,1.08862706,15.33],[20.0,49.44288993,1.08865086,15.16],[21.0,49.44288734,1.08867825,14.82],[22.0,49.4428724,1.08869956,15.21],[23.0,49.44287762,1.08875468,14.85],[24.0,49.44290365,1.08875131,14.46],[25.0,49.44289667,1.08878593,15.61],[26.0,49.44289991,1.08881393,14.9],[27.0,49.44290727,1.08883112,14.82],[28.0,49.44291453,1.0888522,15.1],[29.0,49.4429099,1.08888926,14.53],[30.0,49.44289812,1.08890226,14.59],[31.0,49.44288743,1.08892175,14.85],[32.0,49.4428896,1.08893627,14.84],[33.0,49.44290234,1.08896937,15.02],[34.0,49.442896,1.08896869,15.34],[35.0,49.44287203,1.08899086,14.86],[36.0,49.44288852,1.08900412,15.15],[37.0,49.44289659,1.08904727,15.18],[38.0,49.44288961,1.08904593,14.67],[39.0,49.44290659,1.08904323,15.07],[40.0,49.44291575,1.08905439,14.72],[41.0,49.4429053,1.08907613,15.32],[42.0,49.44289165,1.08911488,15.14],[43.0,49.44289048,1.08911149,15.0],[44.0,49.44290108,1.0891658,14.6],[45.0,49.44291612,1.08917443,15.03],[46.0,49.44292121,1.08919279,14.77],[47.0,49.44293872,1.08920203,15.21],[48.0,null,null,14.96],[49.0,49.44290834,1.089175,14.76],[50.0,49.44288994,1.08919363,15.28],[51.0,49.44293302,1.08921664,15.22],[52.0,49.44291334,1.08921726,14.82],[53.0,49.4429208,1.08924612,15.35],[54.0,49.44292357,1.08927712,14.91],[55.0,49.44293103,1.08928234,14.91],[56.0,49.44291671,1.08929993,15.04],[57.0,49.44290818,1.08931176,14.77],[58.0,49.44289371,1.08934607,14.87],[59.0,49.44290625,1.08938747,14.95],[60.0,49.44289939,1.08939935,15.46],[61.0,49.44287706,1.08942227,15.45],[62.0,49.44288266,1.08939996,14.92],[63.0,49.44289693,1.08940347,15.48],[64.0,49.44290498,1.08938081,14.99],[65.0,49.44292182,1.08940035,15.11],[66.0,49.44290967,1.08942507,15.27],[67.0,49.44290949,1.08944871,15.09],[68.0,49.44291648,1.08948411,15.72],[69.0,49.44290417,1.08951119,15.07],[70.0,49.44290483,1.08956272,14.64],[71.0,49.4428894,1.08955409,15.39],[72.0,49.44288126,1.08954516,14.88],[73.0,49.44287836,1.08955648,14.91],[74.0,49.4428919,1.08959702,14.1],[75.0,49.44288777,1.0895869,15.3],[76.0,49.44288913,1.08956236,15.25],[77.0,49.4428912,1.08955466,15.24],[78.0,49.44288089,1.08952075,15.29],[79.0,49.44287047,1.08957475,15.51],[80.0,49.44288974,1.08957109,14.99],[81.0,49.44287469,1.08958235,15.28],[82.0,null,null,14.78],[83.0,49.44288813,1.08954552,14.89],[84.0,49.44289348,1.08953531,15.32],[85.0,49.44288941,1.08954423,15.12],[86.0,49.44289125,1.08951717,14.6],[87.0,49.44289192,1.08951043,15.11],[88.0,49.44288926,1.0895439,14.95],[89.0,49.442881,1.08955736,14.75],[90.0,49.44287588,1.08954814,15.13],[91.0,49.44287906,1.08956163,14.88],[92.0,49.44315159,1.08959536,14.53],[93.0,49.44288876,1.08956842,14.67],[94.0,49.44289338,1.08958559,15.53],[95.0,49.4428992,1.08955347,14.55],[96.0,null,null,15.07],[97.0,49.44292128,1.08957538,15.18],[98.0,49.44292385,1.08959501,15.19],[99.0,49.44294344,1.08957234,14.63],[100.0,49.44295447,1.08955254,14.9],[101.0,49.44297335,1.08955878,15.04],[102.0,49.44299206,1.08960596,15.24],[103.0,49.44298018,1.08958475,14.81],[104.0,49.4429724,1.08961156,14.65],[105.0,49.44300489,1.08957867,15.3],[106.0,49.44298303,1.08955519,15.33],[107.0,49.44298559,1.08957366,15.11],[108.0,49.4430029,1.08955961,14.82],[109.0,49.44300013,1.08954433,15.12],[110.0,49.44300065,1.0895603,15.03],[111.0,49.44302656,1.08951553,15.25],[112.0,49.44304145,1.0895118,14.63],[113.0,49.44303545,1.08949763,15.03],[114.0,49.44304043,1.08949911,14.95],[115.0,49.44303866,1.08950911,14.67],[116.0,49.44306487,1.08950626,15.06],[117.0,49.44306247,1.08954986,15.01],[118.0,49.44309036,1.0895778,14.88],[119.0,49.44307405,1.08957777,15.12],[120.0,49.4430861,1.08955841,14.57],[121.0,49.44310921,1.08956669,14.98],[122.0,49.44314055,1.08956022,15.13],[123.0,49.44311997,1.08954189,15.09],[124.0,49.4431141,1.08954281,15.32],[125.0,49.44312632,1.08949286,14.64],[126.0,49.44314751,1.08951444,14.55],[127.0,49.44314935,1.08948492,15.07],[128.0,49.44316435,1.08952536,15.14],[129.0,49.44318869,1.08953713,15.64],[130.0,49.44320625,1.08954688,15.18],[131.0,49.44322262,1.08952733,14.74],[132.0,49.44323756,1.08954953,15.24],[133.0,49.4432653,1.08950845,14.75],[134.0,49.44328272,1.08950649,14.55],[135.0,49.44326677,1.08951491,15.78],[136.0,49.44330519,1.08954679,15.1],[137.0,49.44332906,1.08953253,15.21],[138.0,49.44330323,1.08953171,15.17],[139.0,49.44331923,1.08955179,15.54],[140.0,49.4433123,1.08954334,15.09],[141.0,49.44333689,1.08952338,15.37],[142.0,49.44335447,1.08958902,14.69],[143.0,49.44338017,1.08956935,14.58],[144.0,49.44337616,1.08956801,15.43],[145.0,49.44340871,1.08951225,15.44],[146.0,49.44344063,1.08955084,15.15],[147.0,49.443455,1.08956431,15.07],[148.0,49.44345349,1.08956787,15.05],[149.0,49.44346838,1.08955029,14.79],[150.0,49.44347452,1.08956692,15.46],[151.0,49.44347448,1.08958591,15.2],[152.0,49.44349849,1.08956888,15.15],[153.0,49.44350516,1.08959483,15.11],[154.0,49.44348561,1.08961671,15.31],[155.0,49.44351382,1.08961858,15.15],[156.0,49.44351744,1.08963169,15.22],[157.0,49.44350993,1.08964258,14.65],[158.0,49.44351056,1.08964579,15.15],[159.0,49.44353465,1.08964161,15.66],[160.0,49.44353968,1.08963492,14.84],[161.0,49.44353122,1.08969158,14.96],[162.0,49.44355443,1.08967968,15.27],[163.0,49.44354383,1.0897006,15.29],[164.0,49.44356941,1.08973466,15.19],[165.0,49.44358405,1.08972733,14.51],[166.0,49.44358074,1.08973289,15.15],[167.0,49.44356646,1.08972031,14.64],[168.0,49.44356645,1.08977399,14.75],[169.0,49.44358456,1.08982147,15.16],[170.0,49.4435967,1.08982036,14.91],[171.0,49.44360539,1.08987657,15.24],[172.0,49.44358887,1.08986825,15.94],[173.0,49.44361246,1.08987806,15.23],[174.0,49.44361779,1.08990625,15.22],[175.0,49.44361336,1.08992439,14.73],[176.0,49.44361712,1.08994943,14.81],[177.0,49.44362528,1.0899495,14.68],[178.0,49.44363039,1.0899461,14.84],[179.0,49.44364103,1.08997378,14.67],[180.0,49.44366075,1.08998576,14.8],[181.0,49.44367595,1.09001678,14.94],[182.0,49.44366893,1.08999411,14.7],[183.0,49.44365997,1.08997418,14.57],[184.0,49.44366812,1.09000901,14.59],[185.0,49.4436589,1.09001253,15.14],[186.0,49.44366268,1.09002302,15.02],[187.0,49.44370132,1.09003803,15.31],[188.0,49.44368623,1.09006795,15.31],[189.0,49.4436947,1.09005336,14.9],[190.0,49.44368571,1.09007756,15.2],[191.0,49.44367771,1.09008966,14.57],[192.0,49.44369642,1.09013334,15.68],[193.0,49.44370513,1.09016902,15.36],[194.0,49.44370128,1.09017491,14.94],[195.0,49.44371474,1.09018405,14.65],[196.0,49.44370497,1.09017284,15.11],[197.0,49.44370873,1.0902154,14.44],[198.0,49.44372756,1.09023976,14.77],[199.0,49.44372358,1.09021533,15.22],[200.0,49.44375394,1.09022334,15.02],[201.0,49.44375632,1.09024718,14.85],[202.0,49.44376416,1.09024197,15.29],[203.0,null,null,14.69],[204.0,49.44375572,1.09027359,15.09],[205.0,49.44376109,1.09028137,14.85],[206.0,49.44377142,1.09034899,14.75],[207.0,49.44376391,1.09033238,15.14],[208.0,49.44375091,1.09035395,14.7],[209.0,49.44355823,1.09009534,15.57],[210.0,49.44374169,1.09037765,14.82],[211.0,49.44375381,1.09036537,15.6],[212.0,49.44377775,1.09032295,14.67],[213.0,49.44375389,1.09033285,15.18],[214.0,49.44375738,1.09032956,14.64],[215.0,49.44374451,1.09032453,14.6],[216.0,null,null,15.05],[217.0,49.4437351,1.09028806,15.2],[218.0,49.44374203,1.09030683,14.62],[219.0,49.44375551,1.09025507,15.36],[220.0,49.44374698,1.09025555,14.76],[221.0,49.44375571,1.09025654,15.04],[222.0,49.44373896,1.09029153,15.11],[223.0,49.44374285,1.09031927,15.18],[224.0,49.44375645,1.09028574,14.46],[225.0,49.44377199,1.09029504,15.49],[226.0,49.44375268,1.09029071,15.17],[227.0,49.44376219,1.09028108,14.87],[228.0,49.44375212,1.0903049,14.69],[229.0,49.44373141,1.09030274,14.49],[230.0,null,null,14.59],[231.0,49.44373064,1.09029039,15.16],[232.0,49.44371364,1.09031112,14.9],[233.0,49.44372253,1.09028086,14.66],[234.0,49.44371914,1.09025968,14.84],[235.0,49.44373021,1.09025795,15.47],[236.0,49.44372639,1.09026936,14.9],[237.0,49.44371602,1.0902895,14.82],[238.0,49.44369781,1.0902841,15.41],[239.0,49.44370536,1.09030524,15.14],[240.0,49.44371629,1.09030203,15.01],[241.0,49.44372522,1.09030312,14.82],[242.0,49.44371745,1.09033088,14.53],[243.0,49.44371582,1.09029944,14.65],[244.0,49.44372281,1.09027416,14.86],[245.0,49.44372207,1.0902953,14.93],[246.0,49.44371406,1.09027093,15.11],[247.0,49.44370086,1.09030806,15.17],[248.0,49.44369371,1.09030801,15.07],[249.0,49.44368744,1.09032723,15.07],[250.0,49.44369846,1.09031065,14.7],[251.0,49.44373276,1.09031386,14.35],[252.0,49.44372769,1.09031899,14.84],[253.0,49.44373936,1.09031234,14.71],[254.0,49.44375018,1.09029689,14.8],[255.0,49.44378149,1.0903007,14.92],[256.0,49.44380592,1.09026643,14.63],[257.0,49.44382213,1.09027575,14.67],[258.0,49.44384002,1.09032686,14.97],[259.0,49.44385187,1.09027946,15.03],[260.0,49.44386155,1.09028871,14.8],[261.0,49.44386647,1.09029324,15.15],[262.0,49.44388473,1.09029404,14.93],[263.0,49.44388607,1.09030149,14.69],[264.0,49.44390419,1.09029203,15.01],[265.0,49.44390002,1.09027291,15.56],[266.0,49.44392279,1.0902865,14.8],[267.0,49.44394334,1.09025171,15.35],[268.0,49.4439486,1.0902325,15.41],[269.0,49.4439312,1.09023347,15.45],[270.0,49.44395156,1.09024332,14.75],[271.0,null,null,15.6],[272.0,49.44397182,1.09024682,15.03],[273.0,49.44398856,1.09023003,14.92],[274.0,49.44397908,1.09026528,14.93],[275.0,49.4440079,1.09026523,15.18],[276.0,49.44402044,1.09026174,15.02],[277.0,49.44401788,1.09026546,14.95],[278.0,49.44403841,1.09027691,15.39],[279.0,49.44406576,1.09028715,14.78],[280.0,49.44407309,1.09027453,14.69],[281.0,49.4440958,1.09026855,15.24],[282.0,49.44409215,1.09029307,15.21],[283.0,49.44412886,1.09031941,15.33],[284.0,49.44412564,1.09029588,14.68],[285.0,49.44416734,1.09028828,15.32],[286.0,49.44414231,1.09028157,15.14],[287.0,49.44414024,1.09028467,15.53],[288.0,49.4441454,1.09027399,14.63],[289.0,49.44415285,1.0902764,15.07],[290.0,49.44419759,1.09029052,14.92],[291.0,49.44420934,1.09032842,14.52],[292.0,49.44421465,1.09030648,14.79],[293.0,49.44422352,1.09028937,15.34],[294.0,49.44425465,1.09029844,14.86],[295.0,49.44425331,1.09030949,14.78],[296.0,49.44427331,1.09032138,15.26],[297.0,49.44429597,1.09030705,15.3],[298.0,49.444304,1.0903253,15.3],[299.0,49.44430234,1.09030977,14.76],[300.0,49.44432484,1.09029221,14.98],[301.0,49.44434332,1.09028294,15.31],[302.0,49.44434895,1.09023091,14.8],[303.0,49.44434456,1.09024456,14.78],[304.0,49.44435898,1.09019815,15.25],[305.0,49.44437343,1.09022512,15.47],[306.0,49.4443915,1.09023501,14.65],[307.0,49.44438118,1.09023106,14.22],[308.0,49.4443959,1.09023194,14.56],[309.0,49.44442511,1.09026719,14.7],[310.0,49.44443377,1.09027722,14.96],[311.0,49.44445575,1.0902934,15.18],[312.0,49.44445311,1.09026651,14.96],[313.0,49.44448839,1.09026472,14.79],[314.0,49.44447742,1.09026162,15.05],[315.0,49.44449538,1.09026819,14.71],[316.0,49.44450507,1.09025733,14.99],[317.0,49.44450163,1.0902251,14.81],[318.0,49.44451362,1.09021595,15.8],[319.0,49.44448078,1.09022895,15.25],[320.0,49.44448368,1.09020158,14.75],[321.0,49.44446124,1.09020666,14.7],[322.0,49.44447532,1.09020353,14.87],[323.0,49.44445839,1.09019678,14.51],[324.0,49.44445486,1.09021339,14.78],[325.0,49.44444319,1.09023456,14.78],[326.0,49.44444584,1.09020824,15.27],[327.0,49.44446382,1.09017992,14.87],[328.0,49.44446418,1.09017277,14.76],[329.0,49.4444417,1.09017327,14.6],[330.0,49.44444593,1.09016725,14.65],[331.0,49.44445752,1.09015326,14.98],[332.0,49.44447419,1.09020198,14.94],[333.0,49.4444788,1.09018048,15.34],[334.0,49.44447593,1.09020373,14.81],[335.0,49.4444727,1.09018058,15.32],[336.0,49.4444755,1.09017263,15.08],[337.0,49.44443693,1.09012851,15.0],[338.0,49.44444193,1.09014996,14.4],[339.0,49.44444545,1.09012594,14.61],[340.0,49.44443793,1.09011997,15.22],[341.0,49.44443337,1.09012889,15.42],[342.0,49.44442763,1.09011014,15.06],[343.0,49.4444267,1.09011047,15.23],[344.0,49.44442684,1.09009481,14.88],[345.0,49.44443923,1.0900795,14.89],[346.0,49.44441382,1.09002878,14.8],[347.0,49.44446487,1.09003001,15.29],[348.0,49.44446802,1.09004094,15.1],[349.0,49.44448479,1.09004494,14.93],[350.0,49.4444782,1.09002307,14.9],[351.0,49.44446965,1.09004854,15.17],[352.0,49.44446888,1.09005394,15.1],[353.0,49.44448396,1.09007847,14.75],[354.0,49.44448983,1.09006483,15.51],[355.0,49.44450153,1.09003051,15.08],[356.0,49.44449268,1.09000259,15.0],[357.0,49.44448867,1.09001469,15.44],[358.0,49.44447969,1.08998882,15.31],[359.0,49.44448146,1.08995238,14.97],[360.0,49.44447604,1.08993843,15.16],[361.0,49.44448322,1.08990678,14.68],[362.0,49.44449264,1.08989799,14.81],[363.0,49.44450348,1.08993175,14.32],[364.0,49.4444723,1.08990038,15.37],[365.0,49.44446476,1.08988415,14.43],[366.0,49.44444105,1.08985815,15.2],[367.0,49.44443557,1.08987478,14.75],[368.0,49.44444153,1.08987591,14.71],[369.0,49.44443323,1.08986682,14.94],[370.0,49.44442246,1.0898567,15.08],[371.0,49.44442572,1.08982466,15.18],[372.0,49.44445957,1.08986563,15.53],[373.0,49.44445714,1.08987527,15.11],[374.0,49.44448551,1.08986475,15.26],[375.0,49.44448216,1.08986128,14.82],[376.0,49.44447362,1.08984188,15.21],[377.0,49.44447377,1.08983688,15.05],[378.0,49.44446822,1.08982671,14.86],[379.0,49.44447112,1.08985319,14.97],[380.0,49.44446197,1.08983458,14.98],[381.0,49.44446001,1.0898458,15.06],[382.0,49.44446182,1.08982748,15.12],[383.0,49.44446019,1.08983544,14.85],[384.0,49.44445643,1.08986067,14.78],[385.0,49.44444814,1.08983839,15.22],[386.0,49.44442228,1.08986121,14.49],[387.0,49.44441516,1.08984907,14.81],[388.0,49.44442826,1.08983649,15.47],[389.0,49.44442529,1.08985611,14.19],[390.0,49.44442793,1.08984621,14.79],[391.0,49.44443006,1.08982272,15.21],[392.0,49.44441118,1.08979822,14.5],[393.0,49.44438943,1.08980533,15.78],[394.0,49.44440112,1.08976341,14.22],[395.0,49.44442601,1.08975964,15.43],[396.0,49.44440345,1.08974899,15.47],[397.0,49.44439712,1.08973195,15.27],[398.0,49.44441229,1.08971082,14.93],[399.0,49.44439074,1.08969255,15.11],[400.0,49.44439139,1.08971725,14.73],[401.0,49.44440533,1.08970324,15.24],[402.0,49.44440705,1.08971925,14.66],[403.0,49.44442301,1.08972431,14.92],[404.0,49.4444254,1.08972538,15.3],[405.0,49.44442351,1.08967391,14.67],[406.0,49.4444306,1.08967375,14.89],[407.0,49.44444921,1.08964379,15.05],[408.0,49.44443254,1.08964129,14.6],[409.0,49.44443122,1.08959144,15.35],[410.0,49.44443103,1.08961365,15.1],[411.0,49.44442506,1.08960336,14.55],[412.0,49.44442293,1.08961051,14.99],[413.0,49.44442122,1.08960787,14.77],[414.0,49.44441915,1.08964976,14.8],[415.0,49.44441193,1.08963883,15.02],[416.0,49.44440517,1.08963171,14.79],[417.0,49.44440555,1.08961746,15.29],[418.0,49.44439792,1.08960313,14.79],[419.0,49.44438515,1.08958831,15.29],[420.0,49.44438304,1.08955361,14.99],[421.0,49.44437993,1.08955204,15.26],[422.0,49.44439339,1.08951483,14.84],[423.0,49.44440413,1.08953434,14.85],[424.0,49.44439026,1.08954129,14.65],[425.0,49.44439623,1.08953097,15.17],[426.0,49.44438386,1.08952814,15.28],[427.0,49.44440243,1.089545,15.64],[428.0,49.44439469,1.08954987,15.39],[429.0,49.44438993,1.08956965,15.07],[430.0,49.44442547,1.08953822,14.94],[431.0,49.44441961,1.0895416,15.12],[432.0,49.44443073,1.08953407,14.99],[433.0,49.44442709,1.08955399,15.44],[434.0,49.44442457,1.08951349,15.28],[435.0,49.4444247,1.0895049,14.75],[436.0,49.44441383,1.08952641,14.79],[437.0,49.44442257,1.08951257,15.41],[438.0,49.44443878,1.08953862,15.09],[439.0,49.44445293,1.08952439,14.93],[440.0,49.44447782,1.08952016,15.36],[441.0,49.44446921,1.08949428,14.88],[442.0,49.44447211,1.08948628,14.92],[443.0,49.44447388,1.08946646,14.86],[444.0,49.44447267,1.08945548,14.41],[445.0,49.44445474,1.08945367,15.26],[446.0,49.44446352,1.08944996,14.64],[447.0,49.4444566,1.0894252,14.83],[448.0,49.44445413,1.08941809,14.78],[449.0,49.44443527,1.08941658,15.22],[450.0,49.44446828,1.08942686,14.98],[451.0,49.44445827,1.08946506,15.0],[452.0,49.44445986,1.08944518,14.5],[453.0,49.44447536,1.08946056,14.97],[454.0,49.44448726,1.08941011,14.56],[455.0,49.4445015,1.08939655,15.09],[456.0,49.44448578,1.0894005,15.11],[457.0,49.44448565,1.08940184,14.99],[458.0,49.44448631,1.08938728,15.61],[459.0,49.44447048,1.08937536,15.16],[460.0,49.44446652,1.08937572,15.18],[461.0,49.44446513,1.08937806,15.04],[462.0,49.44446748,1.08938702,14.94],[463.0,49.44446138,1.08935289,15.29],[464.0,49.44444187,1.08937818,15.33],[465.0,49.44443011,1.08937821,14.61],[466.0,49.44446014,1.08934456,15.32],[467.0,49.44443406,1.08932552,15.15],[468.0,49.44444661,1.08931447,15.29],[469.0,49.44443825,1.08933606,15.14],[470.0,49.44443994,1.08931551,14.63],[471.0,49.44444405,1.0893096,14.65],[472.0,49.44444642,1.08929731,15.55],[473.0,49.4444468,1.08927923,15.08],[474.0,49.44443636,1.08925186,14.57],[475.0,49.44444469,1.0892538,15.1],[476.0,49.44445273,1.08925668,14.89],[477.0,49.44446391,1.08925864,14.45],[478.0,49.44444687,1.08929735,14.31],[479.0,49.4444546,1.08927828,14.52],[480.0,49.44447566,1.08932208,15.08],[481.0,49.44447019,1.08926105,14.99],[482.0,49.44446787,1.08927396,14.93],[483.0,49.44445691,1.08925272,15.09],[484.0,49.44446158,1.08926868,15.18],[485.0,49.44445694,1.08924681,14.37],[486.0,49.44447584,1.08920269,14.91],[487.0,49.44448496,1.08916191,14.75],[488.0,49.44447662,1.08915478,14.63],[489.0,49.44446192,1.08918624,14.84],[490.0,49.44444156,1.08914546,14.96],[491.0,49.44444558,1.08914733,14.92],[492.0,49.44444648,1.08917026,14.56],[493.0,49.44445104,1.0891819,14.86],[494.0,49.44444421,1.08919666,15.6],[495.0,49.4444432,1.08921796,14.68],[496.0,49.4444356,1.08919043,14.49],[497.0,49.44444125,1.08918053,15.08],[498.0,49.44443649,1.08922025,15.18],[499.0,49.4444254,1.08922426,15.14],[500.0,49.44442142,1.08922393,14.66],[501.0,49.44445329,1.08921343,15.3],[502.0,49.44447035,1.08919908,14.76],[503.0,49.44446199,1.08921833,14.66],[504.0,49.4444634,1.08919646,14.82],[505.0,49.44446565,1.08919327,14.97],[506.0,49.44443819,1.08920553,15.21],[507.0,49.44441934,1.0891858,15.19],[508.0,49.44441079,1.08921496,14.99],[509.0,49.44441878,1.08918121,15.28],[510.0,49.44441717,1.08917903,15.02],[511.0,49.44441798,1.08915861,15.27],[512.0,49.44442912,1.0891321,14.58],[513.0,49.44442797,1.08915416,14.53],[514.0,49.44443235,1.0891531,15.23],[515.0,49.44444328,1.08917157,14.58],[516.0,49.44446169,1.08917804,14.91],[517.0,49.44449345,1.08919232,14.97],[518.0,49.44448727,1.08918952,14.85],[519.0,49.44451042,1.08921088,14.86],[520.0,49.44452457,1.08921418,15.42],[521.0,49.4445064,1.08923067,14.24],[522.0,49.44453751,1.08922313,15.27],[523.0,49.44454616,1.08920758,15.69],[524.0,49.44454472,1.0892069,15.01],[525.0,49.44458782,1.08920191,14.99],[526.0,49.44459969,1.08922654,15.22],[527.0,49.44460409,1.08920206,15.55],[528.0,49.44461276,1.08919731,14.64],[529.0,49.44463383,1.08919597,15.03],[530.0,49.4446477,1.08921165,14.94],[531.0,49.44463778,1.08918446,15.17],[532.0,49.44463134,1.0891752,15.05],[533.0,49.44464479,1.08917422,15.2],[534.0,49.44468088,1.08917618,14.87],[535.0,49.44468031,1.08921002,15.01],[536.0,null,null,14.8],[537.0,49.44471509,1.08917586,14.8],[538.0,49.44471269,1.08919691,14.96],[539.0,49.44469802,1.08920595,14.96],[540.0,49.44471001,1.08918429,14.65],[541.0,49.44473651,1.08916742,15.47],[542.0,49.4447615,1.08916968,14.96],[543.0,49.44473881,1.08918959,14.58],[544.0,49.44475246,1.08919156,15.33],[545.0,49.44477372,1.08919543,14.78],[546.0,49.44476725,1.08915396,15.15],[547.0,49.44480391,1.08919005,14.99],[548.0,49.44483885,1.08915784,15.08],[549.0,49.44484773,1.08919769,15.05],[550.0,49.44488299,1.08921089,14.83],[551.0,49.44489464,1.08921282,15.01],[552.0,49.44490264,1.08919073,15.61],[553.0,49.44491078,1.08920956,14.33],[554.0,49.44491461,1.08919589,15.02],[555.0,49.4449163,1.08919212,15.13],[556.0,49.44491287,1.08918712,14.68],[557.0,49.4449456,1.08918926,14.59],[558.0,49.44496971,1.08917653,15.65],[559.0,49.44497835,1.08917472,14.89],[560.0,49.44496874,1.0891382,15.62],[561.0,49.44495565,1.0891479,15.16],[562.0,49.44496333,1.089135,15.02],[563.0,49.4449586,1.08910281,15.14],[564.0,49.4449663,1.08908858,15.19],[565.0,49.44497773,1.08904324,15.35],[566.0,49.44494535,1.08901127,15.13],[567.0,49.44492728,1.08900041,15.04],[568.0,49.44494354,1.08896836,15.05],[569.0,49.44493203,1.08895525,15.41],[570.0,49.44495616,1.08893726,15.25],[571.0,49.44495266,1.08891194,14.7],[572.0,49.44497602,1.08893288,14.81],[573.0,49.44498453,1.08893831,15.1],[574.0,49.44498287,1.08891009,14.81],[575.0,49.44497993,1.08887884,14.89],[576.0,49.44496828,1.08886811,14.71],[577.0,49.44496078,1.08884732,14.92],[578.0,49.44496462,1.08886184,15.13],[579.0,49.44496501,1.08885034,15.3],[580.0,49.44497382,1.08881468,15.0],[581.0,49.44497283,1.08879769,15.62],[582.0,49.4449636,1.08874897,14.98],[583.0,49.44494944,1.08874275,15.96],[584.0,49.44495852,1.08871115,15.3],[585.0,49.44496264,1.08868253,15.15],[586.0,49.44496072,1.08867078,14.85],[587.0,49.44495082,1.08861732,14.15],[588.0,49.44491953,1.08863064,14.95],[589.0,49.44492697,1.08860284,15.05],[590.0,49.44492011,1.08858287,15.58],[591.0,49.4449249,1.0885797,14.59],[592.0,49.44491052,1.08855307,15.57],[593.0,49.44489901,1.08854461,14.92],[594.0,49.44490968,1.08852804,15.22],[595.0,49.44493399,1.08852412,14.24],[596.0,49.4449446,1.08850397,15.04],[597.0,49.44496239,1.08849394,14.9],[598.0,49.44494945,1.08849559,15.2],[599.0,49.44496585,1.08849017,15.03],[600.0,49.44496873,1.08844147,14.66],[601.0,49.44496716,1.08842278,15.28],[602.0,49.44495291,1.08836812,15.21],[603.0,49.44497244,1.08836428,15.18],[604.0,49.44496629,1.08836618,15.3],[605.0,49.44495702,1.08834722,15.33],[606.0,49.44495506,1.08833785,14.99],[607.0,49.44498006,1.08833105,14.59],[608.0,49.4449554,1.08831332,14.58],[609.0,49.44494765,1.0882817,15.4],[610.0,49.44496099,1.08825116,15.21],[611.0,49.44494228,1.08823006,15.03],[612.0,49.44495877,1.08824546,14.87],[613.0,49.44495373,1.08820864,15.01],[614.0,49.44496089,1.0881965,15.01],[615.0,49.44497486,1.08818378,14.9],[616.0,49.44498506,1.08818762,14.79],[617.0,49.4449941,1.08821218,15.65],[618.0,49.44498517,1.08814605,15.07],[619.0,49.44498469,1.08812636,14.82],[620.0,49.44497243,1.08812986,14.61],[621.0,49.44497667,1.08809752,14.78],[622.0,49.44499557,1.08811163,15.22],[623.0,49.44499854,1.0880933,15.23],[624.0,49.44496006,1.08808703,14.93]],"truth":[[49.4429,1.0884],[49.44291937,1.08957189],[49.44345877,1.08955093],[49.44378594,1.090297],[49.44446019,1.0902708],[49.44444196,1.08916781],[49.44498136,1.08914684],[49.44496312,1.08804383]]}};
 </script>
 <script>
@@ -1413,15 +1622,51 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
     rtk_float: { tol: 0.75, radius: 1.5, mindur: 5,  maxv: 0.25 },
     phone:     { tol: 3.0,  radius: 5.0, mindur: 10, maxv: 0.25 },
   };
-  const DEMO_LABEL = { rtk_fix: "RTK fix", rtk_float: "RTK float", phone: "phone GPS" };
-  const DEMO_TRUE_STOPS = "30 s, 45 s and 20 s";
 
   const state = { raw: null, truth: null, name: "", demo: null, result: null, fit: true };
 
+  /* ---------- language ---------- */
+  const DICT = window.GTO_I18N;
+  let lang = "en";
+  function t(key, vars = {}) {
+    let s = (DICT[lang] && DICT[lang][key]) ?? DICT.en[key] ?? key;
+    s = s.replace(/\{(\w+)\}/g, (_, k) => (k in vars ? vars[k] : `{${k}}`));
+    // French typography: non-breaking space before : ; % ? !
+    if (lang === "fr") s = s.replace(/ ([:;%?!])/g, "\u00a0$1");
+    return s;
+  }
+  function pickInitialLang() {
+    const h = location.hash.replace("#", "").toLowerCase();
+    if (h === "fr" || h === "en") return h;
+    try { const v = localStorage.getItem("gto-lang"); if (v === "fr" || v === "en") return v; } catch (e) { /* storage blocked */ }
+    const langs = navigator.languages || [navigator.language || "en"];
+    return langs.some((l) => /^fr/i.test(l)) ? "fr" : "en";
+  }
+  function applyStaticText() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll("[data-i18n-aria]").forEach((el) => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+    const md = document.getElementById("meta-desc"); if (md) md.setAttribute("content", t("meta.description"));
+    document.querySelectorAll('input[name="lang"]').forEach((el) => { el.checked = el.value === lang; });
+  }
+  function setLang(next, remember) {
+    lang = next;
+    if (remember) { try { localStorage.setItem("gto-lang", next); } catch (e) { /* storage blocked */ } }
+    applyStaticText();
+    showSliderValues();
+    if (loadedMsg) $("loaded").textContent = loadedMsg();
+    if (errorMsg) $("error").textContent = errorMsg();
+    if (state.result) { drawMap(); renderResult(); renderMetrics(); renderFunnel(); renderChart(); renderStops(); }
+  }
+  let loadedMsg = null, errorMsg = null;
+  function showError(fn) { errorMsg = fn; $("error").textContent = fn ? fn() : ""; }
+
   /* ---------- formatting ---------- */
-  const fmtInt = (n) => Math.round(n).toLocaleString("en");
-  const fmtM = (v, d = 2) => (v === null || v === undefined || !Number.isFinite(v) ? "–" : `${v.toFixed(d)} m`);
-  const fmtKB = (b) => (b < 1024 ? `${b} B` : `${(b / 1024).toFixed(1)} KB`);
+  const nf = (v, d) => v.toLocaleString(lang === "fr" ? "fr-FR" : "en-GB", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const fmtInt = (n) => nf(Math.round(n), 0);
+  const fmtM = (v, d = 2) => (v === null || v === undefined || !Number.isFinite(v) ? "–" : `${nf(v, d)}\u00a0m`);
+  const fmtKB = (b) => (b < 1024 ? `${b}\u00a0${t("unit.B")}` : `${nf(b / 1024, 1)}\u00a0${t("unit.KB")}`);
   const fmtClock = (s) => { s = Math.max(0, Math.round(s)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60; return (h ? `${h}:${String(m).padStart(2, "0")}` : `${m}`) + `:${String(r).padStart(2, "0")}`; };
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
@@ -1480,7 +1725,7 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
     if (showClean) r.stationary.filter((p) => p.isStop).forEach((p, i) => {
       const secs = (p.stopEnd - p.stopStart) / 1000;
       const m = L.circleMarker([p.lat, p.lon], { radius: 11, color: C.st, weight: 2.5, fillColor: C.st, fillOpacity: 0.3 })
-        .bindTooltip(`Stop ${i + 1}: ${Math.round(secs)} s, ${p.stopPoints} fixes merged into 1`, { direction: "top", offset: [0, -10] })
+        .bindTooltip(t("stop.tooltip", { i: i + 1, s: Math.round(secs), n: p.stopPoints }), { direction: "top", offset: [0, -10] })
         .addTo(layers.stops);
       stopMarkers.push(m);
     });
@@ -1495,10 +1740,10 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
 
   /* ---------- settings ---------- */
   const sliders = {
-    tol: { el: $("tol"), out: $("tol-out"), fmt: (v) => `${(+v).toFixed(2)} m` },
-    radius: { el: $("radius"), out: $("radius-out"), fmt: (v) => (+v === 0 ? "off" : `${(+v).toFixed(1)} m`) },
-    mindur: { el: $("mindur"), out: $("mindur-out"), fmt: (v) => `${v} s` },
-    maxv: { el: $("maxv"), out: $("maxv-out"), fmt: (v) => `${(+v).toFixed(2)} m/s` },
+    tol: { el: $("tol"), out: $("tol-out"), fmt: (v) => fmtM(+v) },
+    radius: { el: $("radius"), out: $("radius-out"), fmt: (v) => (+v === 0 ? t("off") : fmtM(+v, 1)) },
+    mindur: { el: $("mindur"), out: $("mindur-out"), fmt: (v) => `${v}\u00a0s` },
+    maxv: { el: $("maxv"), out: $("maxv-out"), fmt: (v) => `${nf(+v, 2)}\u00a0m/s` },
   };
   function showSliderValues() { for (const s of Object.values(sliders)) s.out.textContent = s.fmt(s.el.value); }
   function applyPreset(key) {
@@ -1535,11 +1780,12 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
     state.raw = demoRaw(key);
     state.truth = window.GTO_SAMPLES[key].truth;
     state.demo = key;
-    state.name = `Simulated walk, ${DEMO_LABEL[key]}`;
+    state.name = `simulated ${key}`;
     state.fit = true;
     document.querySelectorAll("[data-demo]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.demo === key)));
-    $("error").textContent = "";
-    $("loaded").textContent = `Showing: simulated 505 m walk in Rouen with ${DEMO_LABEL[key]} noise and 3 stops.`;
+    showError(null);
+    loadedMsg = () => t("loaded.demo", { noise: t(`noise.${key}`) });
+    $("loaded").textContent = loadedMsg();
     $("truth-wrap").hidden = false;
     document.querySelector(".truth-key").hidden = false;
     applyPreset(key);
@@ -1548,9 +1794,9 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
   document.querySelectorAll("[data-demo]").forEach((b) => b.addEventListener("click", () => loadDemo(b.dataset.demo)));
 
   async function loadFile(file) {
-    $("error").textContent = "";
+    showError(null);
     if (!file) return;
-    if (file.size > 50 * 1024 * 1024) { $("error").textContent = "That file is over 50 MB. Split it into shorter walks and try again."; return; }
+    if (file.size > 50 * 1024 * 1024) { showError(() => t("err.tooBig")); return; }
     try {
       const pts = GTO.parseGpx(await file.text());
       state.raw = pts; state.truth = null; state.demo = null; state.name = file.name; state.fit = true;
@@ -1558,10 +1804,11 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
       $("truth-wrap").hidden = true;
       document.querySelector(".truth-key").hidden = true;
       const segs = new Set(pts.map((p) => p.track + "|" + p.segment)).size;
-      $("loaded").textContent = `Showing: ${file.name}, ${fmtInt(pts.length)} fixes in ${segs} segment${segs > 1 ? "s" : ""}.`;
+      loadedMsg = () => t("loaded.file", { name: file.name, n: fmtInt(pts.length), s: segs, segs: t(segs > 1 ? "segments" : "segment") });
+      $("loaded").textContent = loadedMsg();
       compute();
     } catch (e) {
-      $("error").textContent = `Could not read ${file.name}. ${e.message}`;
+      showError(() => t("err.read", { name: file.name, msg: e.code ? t(`err.${e.code}`) : e.message }));
     }
   }
   $("file").addEventListener("change", (e) => loadFile(e.target.files[0]));
@@ -1583,7 +1830,7 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
     try {
       state.result = GTO.run(state.raw, cfg, state.truth);
     } catch (e) {
-      $("error").textContent = e.message;
+      showError(() => (e.code ? t(`err.${e.code}`) : e.message));
       return;
     }
     drawMap(); renderResult(); renderMetrics(); renderFunnel(); renderChart(); renderStops();
@@ -1592,42 +1839,42 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
   let announceTimer = null;
   function renderResult() {
     const m = state.result.metrics;
-    $("result-line").innerHTML = `<span class="from">${fmtInt(m.rawPoints)} fixes</span> became <span class="to">${fmtInt(m.finalPoints)}</span>`;
-    const stops = m.stopsDetected === 1 ? "1 stop merged" : `${m.stopsDetected} stops merged`;
-    $("result-sub").textContent = `${m.reductionPct.toFixed(1)}% fewer, ${stops}. Every moving fix is within ${fmtM(m.maxDeviationM)} of the cleaned route.`;
+    const v = { raw: fmtInt(m.rawPoints), final: fmtInt(m.finalPoints) };
+    $("result-line").innerHTML = t("result.line", v);
+    const stops = m.stopsDetected === 0 ? t("stops.zero") : m.stopsDetected === 1 ? t("stops.one") : t("stops.many", { n: m.stopsDetected });
+    $("result-sub").textContent = t("result.sub", { pct: nf(m.reductionPct, 1), stops, dev: fmtM(m.maxDeviationM) });
     clearTimeout(announceTimer);
     announceTimer = setTimeout(() => {
-      $("announce").textContent = `${fmtInt(m.rawPoints)} fixes became ${fmtInt(m.finalPoints)}. ${$("result-sub").textContent}`;
+      $("announce").textContent = `${t("result.plain", v)} ${$("result-sub").textContent}`;
     }, 700);
   }
 
   function renderMetrics() {
     const m = state.result.metrics, v = state.result.validation;
     const rows = [
-      ["Largest gap", "Recorded fix furthest from the cleaned route, stops excluded", fmtM(m.maxDeviationM)],
-      ["Average gap", "Over all moving fixes", fmtM(m.meanDeviationM)],
-      ["Hausdorff distance", "Worst mismatch between the two lines, in either direction", fmtM(m.hausdorffM)],
-      ["Jitter inside stops", "How far fixes wandered while standing still", fmtM(m.stopJitterMaxM)],
-      ["Route length", "Recorded, then cleaned. Jitter adds distance that was never walked.", `${m.originalLengthM.toFixed(1)} → ${m.cleanedLengthM.toFixed(1)} m`],
+      ["m.max", fmtM(m.maxDeviationM)],
+      ["m.mean", fmtM(m.meanDeviationM)],
+      ["m.haus", fmtM(m.hausdorffM)],
+      ["m.jitter", fmtM(m.stopJitterMaxM)],
+      ["m.len", `${nf(m.originalLengthM, 1)} → ${fmtM(m.cleanedLengthM, 1)}`],
     ];
-    if (m.truthMeanErrorM !== null) rows.push(["Error against the true path", "Average, recorded then cleaned. Only known for the simulated walks.", `${fmtM(m.originalTruthMeanErrorM)} → ${fmtM(m.truthMeanErrorM)}`]);
+    if (m.truthMeanErrorM !== null) rows.push(["m.truth", `${fmtM(m.originalTruthMeanErrorM)} → ${fmtM(m.truthMeanErrorM)}`]);
     rows.push(
-      ["GPX file size", "Recorded, then cleaned", `${fmtKB(m.originalGpxBytes)} → ${fmtKB(m.cleanedGpxBytes)}`],
-      ["Removed by checks", "Missing position or time, duplicates, jumps over 4 m/s",
-        fmtInt(v.missingCoords + v.invalidCoords + v.missingTime + v.duplicates + v.speedOutliers)],
-      ["Processing time", "In this browser", `${m.processingMs < 10 ? m.processingMs.toFixed(1) : Math.round(m.processingMs)} ms`],
+      ["m.size", `${fmtKB(m.originalGpxBytes)} → ${fmtKB(m.cleanedGpxBytes)}`],
+      ["m.removed", fmtInt(v.missingCoords + v.invalidCoords + v.missingTime + v.duplicates + v.speedOutliers)],
+      ["m.time", `${m.processingMs < 10 ? nf(m.processingMs, 1) : fmtInt(m.processingMs)}\u00a0ms`],
     );
-    $("metrics").innerHTML = rows.map(([t, s, d]) => `<dt>${t}<small>${s}</small></dt><dd>${d}</dd>`).join("");
+    $("metrics").innerHTML = rows.map(([k, d]) => `<dt>${t(k)}<small>${t(k + ".s")}</small></dt><dd>${d}</dd>`).join("");
   }
 
   function renderFunnel() {
     const m = state.result.metrics;
     const per = m.rawPoints > 900 ? Math.ceil(m.rawPoints / 900) : 1;
     const steps = [
-      ["Recorded", m.rawPoints, css("--recorded")],
-      ["After checks", m.validatedPoints, css("--graphite")],
-      ["After merging stops", m.afterStationaryPoints, css("--graphite")],
-      ["After simplifying", m.finalPoints, css("--cleaned")],
+      [t("f.recorded"), m.rawPoints, css("--recorded")],
+      [t("f.checked"), m.validatedPoints, css("--graphite")],
+      [t("f.stops"), m.afterStationaryPoints, css("--graphite")],
+      [t("f.simplified"), m.finalPoints, css("--cleaned")],
     ];
     const box = $("funnel");
     box.innerHTML = steps.map(([n, c]) => `<div class="funnel-row"><span class="name">${n}</span><span class="count">${fmtInt(c)}</span><canvas></canvas></div>`).join("");
@@ -1644,7 +1891,7 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
         ctx.fill();
       }
     });
-    $("funnel-note").textContent = per === 1 ? "Each dot is one GPS fix." : `Each dot is ${per} GPS fixes.`;
+    $("funnel-note").textContent = per === 1 ? t("f.note.one") : t("f.note.many", { n: per });
   }
 
   /* deviation chart */
@@ -1658,7 +1905,7 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
       segEnd = offset + p.dist;
     }
     const box = $("chart");
-    if (!prof.length) { box.innerHTML = '<p class="empty">Not enough fixes to compare.</p>'; return; }
+    if (!prof.length) { box.innerHTML = `<p class="empty">${t("chart.empty")}</p>`; return; }
     const W = 640, H = 250, P = { l: 42, r: 12, t: 22, b: 44 };
     const xmax = prof[prof.length - 1].x || 1;
     const tol = r.config.tolerance;
@@ -1666,8 +1913,9 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
     const X = (v) => P.l + (v / xmax) * (W - P.l - P.r), Y = (v) => H - P.b - (v / ymax) * (H - P.t - P.b);
     const nice = (max, n) => { const raw = max / n, mag = 10 ** Math.floor(Math.log10(raw)); const f = raw / mag; return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * mag; };
     const xs = nice(xmax, 6), ys = nice(ymax, 4);
+    const yDec = ys < 0.1 ? 2 : ys < 1 ? 1 : 0;
     let g = "";
-    for (let v = 0; v <= ymax + 1e-9; v += ys) g += `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${P.l - 6}" y="${Y(v) + 4}" text-anchor="end">${+v.toFixed(2)}</text>`;
+    for (let v = 0; v <= ymax + 1e-9; v += ys) g += `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${P.l - 6}" y="${Y(v) + 4}" text-anchor="end">${nf(v, yDec)}</text>`;
     for (let v = 0; v <= xmax + 1e-9; v += xs) g += `<text x="${X(v)}" y="${H - P.b + 16}" text-anchor="middle">${Math.round(v)}</text>`;
     let shade = "", start = null;
     prof.forEach((p, i) => {
@@ -1680,11 +1928,11 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
     });
     const path = prof.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.dev).toFixed(1)}`).join("");
     box.innerHTML = `
-      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Line chart of each recorded fix's distance from the cleaned route along the walk. Maximum ${fmtM(r.metrics.maxDeviationM)} for moving fixes; tolerance ${fmtM(tol)}.">
-        <g class="axis">${g}<text x="${(P.l + W - P.r) / 2}" y="${H - 6}" text-anchor="middle">metres walked</text><text x="${P.l - 6}" y="${P.t - 10}" text-anchor="end">m off</text></g>
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t("chart.aria", { max: fmtM(r.metrics.maxDeviationM), tol: fmtM(tol) })}">
+        <g class="axis">${g}<text x="${(P.l + W - P.r) / 2}" y="${H - 6}" text-anchor="middle">${t("chart.x")}</text><text x="${P.l - 6}" y="${P.t - 10}" text-anchor="start" dx="-30">${t("chart.y")}</text></g>
         ${shade}
         <line x1="${P.l}" x2="${W - P.r}" y1="${Y(tol)}" y2="${Y(tol)}" stroke="var(--cleaned)" stroke-width="1.5" stroke-dasharray="6 4"/>
-        <text x="${W - P.r}" y="${Y(tol) - 5}" text-anchor="end" fill="var(--cleaned)" font-size="11" font-weight="700">tolerance ${tol.toFixed(2)} m</text>
+        <text x="${W - P.r}" y="${Y(tol) - 5}" text-anchor="end" fill="var(--cleaned)" font-size="11" font-weight="700">${t("chart.tol", { v: fmtM(tol) })}</text>
         <path d="${path}" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-linejoin="round"/>
         <line id="ch-cursor" y1="${P.t}" y2="${H - P.b}" stroke="var(--ink)" stroke-width="1" visibility="hidden"/>
         <circle id="ch-dot" r="4" fill="var(--recorded)" stroke="var(--panel)" stroke-width="1.5" visibility="hidden"/>
@@ -1715,7 +1963,7 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
     tip.hidden = false;
     tip.style.left = `${Math.min(Math.max(cx * scale, 70), svg.getBoundingClientRect().width - 70)}px`;
     tip.style.top = `${cy * scale}px`;
-    tip.textContent = `${Math.round(p.x)} m: ${p.dev.toFixed(2)} m off${p.inStop ? " (in a stop)" : ""}`;
+    tip.textContent = t("chart.tip", { d: fmtInt(p.x), dev: fmtM(p.dev) }) + (p.inStop ? t("chart.inStop") : "");
     if (!hoverMarker) hoverMarker = L.circleMarker([p.lat, p.lon], { radius: 7, color: css("--ink"), weight: 2.5, fillColor: css("--recorded"), fillOpacity: 1, interactive: false }).addTo(map);
     else hoverMarker.setLatLng([p.lat, p.lon]);
   }
@@ -1729,15 +1977,13 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
   function renderStops() {
     const r = state.result, stops = r.stationary.filter((p) => p.isStop);
     const t0 = Math.min(...r.validated.map((p) => p.time));
-    $("stops-lede").textContent = state.demo
-      ? `This simulated walk has 3 real stops of ${DEMO_TRUE_STOPS}. Compare them with what was found.`
-      : "Runs of fixes where the walker stood still, each merged into one fix.";
+    $("stops-lede").textContent = state.demo ? t("stops.lede.demo") : t("stops.lede.file");
     if (!stops.length) {
-      $("stops").innerHTML = `<p class="empty">No stops found with these settings. ${+sliders.radius.el.value === 0 ? "Stop merging is off." : "Try a larger stop radius."}</p>`;
+      $("stops").innerHTML = `<p class="empty">${t("stops.none")} ${+sliders.radius.el.value === 0 ? t("stops.none.off") : t("stops.none.try")}</p>`;
       return;
     }
-    $("stops").innerHTML = `<table><thead><tr><th scope="col">Stop</th><th scope="col">Starts</th><th scope="col" class="num">Lasted</th><th scope="col" class="num">Fixes merged</th><th scope="col"><span class="sr-only">Map</span></th></tr></thead><tbody>${
-      stops.map((p, i) => `<tr><td>${i + 1}</td><td>${fmtClock((p.stopStart - t0) / 1000)} into the walk</td><td class="num">${Math.round((p.stopEnd - p.stopStart) / 1000)} s</td><td class="num">${p.stopPoints}</td><td><button type="button" data-stop="${i}">Show on map</button></td></tr>`).join("")
+    $("stops").innerHTML = `<table><thead><tr><th scope="col">${t("th.stop")}</th><th scope="col">${t("th.starts")}</th><th scope="col" class="num">${t("th.lasted")}</th><th scope="col" class="num">${t("th.merged")}</th><th scope="col"><span class="sr-only">${t("th.map")}</span></th></tr></thead><tbody>${
+      stops.map((p, i) => `<tr><td>${i + 1}</td><td>${t("stops.into", { t: fmtClock((p.stopStart - t0) / 1000) })}</td><td class="num">${Math.round((p.stopEnd - p.stopStart) / 1000)}\u00a0s</td><td class="num">${p.stopPoints}</td><td><button type="button" data-stop="${i}">${t("stops.show")}</button></td></tr>`).join("")
     }</tbody></table>`;
     $("stops").querySelectorAll("[data-stop]").forEach((b) => b.addEventListener("click", () => {
       const s = stops[+b.dataset.stop];
@@ -1775,6 +2021,10 @@ window.GTO_SAMPLES = {"rtk_fix":{"start":"2026-10-30T09:00:00+00:00","points":[[
   live.id = "announce"; live.className = "sr-only"; live.setAttribute("aria-live", "polite");
   document.body.appendChild(live);
   $("result-line").removeAttribute("aria-live");
+  document.querySelectorAll('input[name="lang"]').forEach((el) => el.addEventListener("change", () => setLang(el.value, true)));
+  window.addEventListener("hashchange", () => { const h = location.hash.slice(1).toLowerCase(); if ((h === "fr" || h === "en") && h !== lang) setLang(h, false); });
+  lang = pickInitialLang();
+  applyStaticText();
   loadDemo("rtk_float");
 })();
 

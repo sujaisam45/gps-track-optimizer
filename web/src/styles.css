@@ -197,3 +197,13 @@ footer { padding: 1.25rem clamp(1rem, 3vw, 2rem) 2rem; color: var(--graphite); f
   .view-toggle span { padding: .3rem .5rem; font-size: .85rem; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+
+/* language switch */
+.lang { display: flex; border: 1px solid var(--rule); border-radius: 7px; overflow: hidden; margin-left: auto; align-self: center; }
+.lang label { position: relative; }
+.lang input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.lang span { display: block; padding: .2rem .55rem; font-size: .85rem; font-weight: 700; }
+.lang input:checked + span { background: var(--ink); color: var(--paper); }
+.lang input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: -3px; }
+.top .lang + .gh { margin-left: 0; }
+.seg span { line-height: 1.2; }

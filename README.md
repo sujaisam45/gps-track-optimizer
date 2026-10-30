@@ -22,7 +22,9 @@ than the raw recording (mean error 0.24 m → 0.16 m).
 
 `docs/index.html` is a single self-contained page: drop a GPX file on it, tune
 the settings, see the before/after map, the distance chart and the stops, and
-download the cleaned GPX. The file never leaves the browser.
+download the cleaned GPX. The file never leaves the browser. The page is in
+English and French: it follows the visitor's browser language, has an EN/FR
+switch, and `#fr` or `#en` at the end of the link forces a language.
 
 The JavaScript in `web/src/core.js` is a port of the Python pipeline. It is
 checked against Python on the same input data: `node web/crosscheck.js`
@@ -68,7 +70,7 @@ All thresholds are configurable (CLI flags, dashboard sliders, or the
 
 ```
 docs/index.html         the website (built file, served by GitHub Pages)
-web/src/                website source: core.js (algorithms), app.js (UI), styles.css
+web/src/                website source: core.js (algorithms), app.js (UI), i18n.js (EN/FR text), styles.css
 web/build.py            assembles docs/index.html
 web/crosscheck.js       JS vs Python comparison
 app.py                  Streamlit dashboard (local alternative to the website)

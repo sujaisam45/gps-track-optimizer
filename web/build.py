@@ -15,6 +15,7 @@ for marker, text in [
     ("/*CSS*/", (SRC / "styles.css").read_text(encoding="utf-8")),
     ("/*PROJ4*/", PROJ4.read_text(encoding="utf-8")),
     ("/*CORE*/", (SRC / "core.js").read_text(encoding="utf-8")),
+    ("/*I18N*/", (SRC / "i18n.js").read_text(encoding="utf-8")),
     ("/*SAMPLES*/", (SRC / "samples.json").read_text(encoding="utf-8")),
     ("/*APP*/", (SRC / "app.js").read_text(encoding="utf-8")),
 ]:

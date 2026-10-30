@@ -12,6 +12,7 @@
 
   /* ---------- small helpers ---------- */
   const hyp = Math.hypot;
+  const fail = (code, msg) => { const e = new Error(msg); e.code = code; throw e; };
   function median(arr) {
     const a = arr.filter((v) => Number.isFinite(v)).sort((p, q) => p - q);
     if (!a.length) return NaN;
@@ -47,7 +48,7 @@
   /* ---------- GPX in / out ---------- */
   function parseGpx(text) {
     const doc = new DOMParser().parseFromString(text, "application/xml");
-    if (doc.getElementsByTagName("parsererror").length) throw new Error("This file is not valid GPX/XML.");
+    if (doc.getElementsByTagName("parsererror").length) fail("notXml", "This file is not valid GPX/XML.");
     const kid = (el, name) => { for (const c of el.children) if (c.localName === name) return c; return null; };
     const num = (v) => (v === null || v === undefined || v === "" ? NaN : Number(v));
     const readPoint = (el, track, segment) => {
@@ -74,7 +75,7 @@
         for (const p of rte.children) if (p.localName === "rtept") pts.push(readPoint(p, ri, 0));
       });
     }
-    if (!pts.length) throw new Error("No track points found. The file needs <trkpt> or <rtept> elements.");
+    if (!pts.length) fail("noPoints", "No track points found. The file needs <trkpt> or <rtept> elements.");
     return pts;
   }
 
@@ -129,7 +130,7 @@
     const seen = new Set();
     pts = pts.filter((p) => { const k = `${p.track}|${p.segment}|${p.time}`; if (seen.has(k)) return false; seen.add(k); return true; });
     rep.duplicates = n - pts.length;
-    if (!pts.length) throw new Error("No usable points: every point is missing a position or a timestamp.");
+    if (!pts.length) fail("noUsable", "No usable points: every point is missing a position or a timestamp.");
 
     const proj = makeProjector(median(pts.map((p) => p.lat)), median(pts.map((p) => p.lon)));
     for (const p of pts) [p.x, p.y] = proj.toXY(p.lat, p.lon);
